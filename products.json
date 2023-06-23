@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "title": "test1",
+    "description": "this is test",
+    "price": "asd",
+    "photo": "public/photos/test",
+    "stock": 12
+  },
+  {
+    "id": 2,
+    "title": "test1",
+    "description": "this is test",
+    "price": "asd",
+    "photo": "public/photos/test",
+    "stock": 12
+  },
+  {
+    "id": 3,
+    "title": "test1",
+    "description": "this is test",
+    "price": "asd",
+    "photo": "public/photos/test",
+    "stock": 12
+  },
+  {
+    "id": 4,
+    "title": "test1",
+    "description": "this is test",
+    "price": "asd",
+    "photo": "public/photos/test",
+    "stock": 12
+  },
+  {
+    "id": 5,
+    "title": "test1",
+    "description": "this is test",
+    "price": "asd",
+    "photo": "public/photos/test",
+    "stock": 12
+  },
+  {
+    "id": 6,
+    "title": "test1",
+    "description": "this is test",
+    "price": "asd",
+    "photo": "public/photos/test",
+    "stock": 12
+  },
+  {
+    "id": 7,
+    "title": "test1",
+    "description": "this is test",
+    "price": "asd",
+    "photo": "public/photos/test",
+    "stock": 12
+  }
+]
