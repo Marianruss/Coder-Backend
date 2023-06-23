@@ -1,6 +1,6 @@
 
 
-class ProductManager {
+export class ProductManager {
     fs = require("fs")
 
     constructor() {
