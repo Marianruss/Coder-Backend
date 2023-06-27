@@ -27,15 +27,15 @@ app.get("/product/:id", (req, res) => {
 })
 
 
-app.get("/user", (req, res) => {
-    const user = {
-        "name": "Mariano",
-        "email": "mariano@mariano.com",
-        "edad": 28
-    }
-    console.log(req.url, res)
-    return res.send(user)
-})
+// app.get("/user", (req, res) => {
+//     const user = {
+//         "name": "Mariano",
+//         "email": "mariano@mariano.com",
+//         "edad": 28
+//     }
+//     console.log(req.url, res)
+//     return res.send(user)
+// })
 
 app.listen(8080, () => {
     console.log("Server running in port 8080...")
