@@ -4,7 +4,7 @@ class ProductManager {
 
     constructor() {
         this.products = []
-        this.path = "../products.json"
+        this.path = "./files/products.json"
 
         //Cargo la data del archivo a un objeto, utilizado en algunos casos para ordenar o eliminar objetos.
         const fileData = this.fs.readFileSync(this.path, "utf-8");
@@ -18,8 +18,21 @@ class ProductManager {
 
 
     //Method to show all prods
-    getProducts() {
-        console.log(this.fileProds)
+    getProducts(limit) {
+        if (!limit) {
+            return this.fileProds
+        }
+        else {
+            return this.fileProds.slice(0, limit)
+        }
+    }
+
+    //find index of prod
+    findIndex(id) {
+        const index = this.fileProds.findIndex(obj => {
+            return obj.id === id
+        })
+        return index
     }
 
     //check if any key in new product is empty
@@ -37,7 +50,7 @@ class ProductManager {
     //Add item to products if there is no empty key
     addIfNotEmpty(user, prod) {
         if (user.checkIfEmpty(prod)) {
-            console.log("Error, no pueden haber campos vacíos.")
+            return "Error, no pueden haber campos vacíos."
         }
         else {
             user.addProduct(prod, admin)
@@ -47,21 +60,26 @@ class ProductManager {
     //Search product by ID in JSON
     searchById(id) {
 
-        this.fs.promises.readFile(this.path, "utf-8")
+        return this.fs.promises.readFile(this.path, "utf-8")
             .then(function (res) {
                 const data = JSON.parse(res)
+                const index = data.findIndex(obj => {
+                    return obj.id === id
+                })
                 const filtered = data.filter(i => i.id === id)
-                console.log(filtered)
+                if (index === -1) {
+                    return ("Error, no existe el producto")
+                }
+                return (filtered)
             })
             .catch(err => {
-                console.log(err)
+                return err
             })
     }
 
 
     //Check if item exist
     checkIfExists(id) {
-
         return this.fs.promises.readFile(this.path, "utf-8")
             .then((res) => {
                 if (!res) {
@@ -74,7 +92,6 @@ class ProductManager {
                 console.log(err)
                 return err
             })
-
     }
 
     //delete product by id
@@ -86,6 +103,7 @@ class ProductManager {
             console.log(`"No existe el item con ID ${id}"`)
             return
         }
+
 
         //cuando sobreescribo ordena el archivo y reescribe para que no quede desordenado
         this.fileProds.splice(index, 1)
@@ -102,11 +120,7 @@ class ProductManager {
     }
 
 
-    updateProduct(id, obj) {
-        //Encuentra el index del objeto con id dado por usuario
-        const index = this.fileProds.findIndex(obj => {
-            return obj.id === id
-        })
+    updateProduct(index,obj) {
 
         //Recorre las keys del objeto de fileprods[index encontrado arriba] y si existen en el objeto
         // que ingresó el usuario las reemplaza
@@ -144,6 +158,7 @@ class ProductManager {
 
         const newProduct = {
             id: lenght + 1,
+            status : true,
             title: prod.title,
             description: prod.description,
             price: prod.price,
@@ -183,54 +198,13 @@ class ProductManager {
 
 
 
-
-
-
-
-const test = {
-    title: "test1",
-    description: "this is test",
-    price: "asd",
-    photo: "public/photos/test",
-    stock: 12
-}
-
-const test2 = {
-    title: "test2",
-    description: "this is test 2",
-    price: "asd2",
-    photo: "public/photos/test2",
-    stock: 12
-}
-
 const modificado = {
     title: "modificadooooooooooooooo",
 
 }
 
-
 const admin = new ProductManager
 
 
-//Descomentar para ejecutar
-
-// //Añade un item si todos los campos están completos
-// admin.addIfNotEmpty(admin, test)
-
-
-
-// admin.showQant("products.txt")
-
-//Busca por ID, si está vacío devuelve "not found"
-// admin.searchById(3)
-
-//muestra todos los productos
-admin.getProducts()
-
-
-//Borrar producto
-// admin.deleteProd(45324)
-
-// actualiza producto
-// admin.updateProduct(4, modificado)
+module.exports = ProductManager
 
