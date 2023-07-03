@@ -1,11 +1,10 @@
 
-
-export class ProductManager {
+class ProductManager {
     fs = require("fs")
 
     constructor() {
         this.products = []
-        this.path = "./products.json"
+        this.path = "../products.json"
 
         //Cargo la data del archivo a un objeto, utilizado en algunos casos para ordenar o eliminar objetos.
         const fileData = this.fs.readFileSync(this.path, "utf-8");
@@ -19,7 +18,7 @@ export class ProductManager {
 
 
     //Method to show all prods
-    getProducts(){
+    getProducts() {
         console.log(this.fileProds)
     }
 
@@ -226,7 +225,7 @@ const admin = new ProductManager
 // admin.searchById(3)
 
 //muestra todos los productos
-    admin.getProducts()
+admin.getProducts()
 
 
 //Borrar producto
