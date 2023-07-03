@@ -1,12 +1,9 @@
-
+const productManager = require("../managers/productManager")
+const admin = new productManager
 const { Router } = require("express")
 
 
 const prodRouter = Router()
-const prods = [
-]
-
-
 
 
 
@@ -17,11 +14,11 @@ prodRouter.get("/", (req, res) => {
     const limit = parseInt(req.query.limit)
 
     if (!limit) {
-        return res.send(prods)
+        return res.send(admin.getProducts())
     }
     else {
-        const prods = prods.slice(0, limit)
-        return res.send(prods)
+        // const prods = prods.slice(0, limit)
+        return res.send(admin.getProducts(limit))
     }
 
 })
@@ -29,78 +26,55 @@ prodRouter.get("/", (req, res) => {
 
 //Traer un producto por ID
 
-prodRouter.get("/:id", (req, res) => {
-    const id = parseInt(req.params.id)
-    const index = prods.findIndex(obj =>{
-        return obj.id === id
-    })
-
-    if (index === -1){
-        return res.status(404).json({
-            error: "No existe el producto"
-        })
+prodRouter.get("/:id", async (req, res) => {
+    try {
+        const id = parseInt(req.params.id)
+        const prod = await admin.searchById(id)
+        if (prod === ""){
+            return res.status(404).json({
+                error: "No existe el producto"
+            })
+        }else{
+        return res.send(prod)}
     }
-    else{
-        let prod = prods.find((item) => item.id === id)
-        return res.send(prod)
+    catch (err) {
+        return res.status(500).send(err);
     }
-
-    
-
-    
-
-    
 })
 
 
 //Agregar un producto
 prodRouter.post("/add", (req, res) => {
     const prod = req.body
-    prod.id = prods.length + 1
-    prod.status = true
-
-    prods.push(prod)
-
-    return res.send(prods)
+    return res.send(admin.addProduct(prod, admin))
 })
 
 //Borrar un producto
 prodRouter.delete("/delete/:id", (req, res) => {
     const id = parseInt(req.params.id)
 
-    const index = prods.findIndex(obj => {
-        return (obj.id === id)
-    })
+    const index = admin.findIndex(id)
 
     if (index === -1) {
         return res.status(404).json({
             error: "No existe el producto"
         })
     }
-
-    prods.splice(index, 1)
-    return res.send(`"Se borró el producto id ${id}"`)
+    return res.send(admin.deleteProd(id))
 })
 
 
 //Editar un producto
 prodRouter.put("/edit/:id", (req, res) => {
     const id = parseInt(req.params.id)
+    // const obj = req.body
 
     //Obtiene index del objeto con id proporcionada.
-    const index = prods.findIndex(obj => {
-        return obj.id === id
-    })
-
+    const index = admin.findIndex(id)
     //Comprueba si el body tiene campos que coincidan con campos del  producto con el id
     // y escribe si los tiene
-    Object.keys(prods[index]).forEach(key => {
-        if (key in req.body) {
-            prods[index][key] = req.body[key]
-        }
-    })
 
-    return res.send(`Se editó el archivo con id ${id}`)
+    return res.send(admin.updateProduct(index,req.body))
 
 })
 
