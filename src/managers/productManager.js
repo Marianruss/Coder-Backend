@@ -6,7 +6,7 @@ class ProductManager {
         this.products = []
         this.path = "./files/products.json"
 
-        //Cargo la data del archivo a un objeto, utilizado en algunos casos para ordenar o eliminar objetos.
+
         const fileData = this.fs.readFileSync(this.path, "utf-8");
         if (fileData.trim().length === 0) {
             this.fileProds = [];
@@ -16,6 +16,8 @@ class ProductManager {
         }
     }
 
+    //------------------------------//
+    //------------------------------//
 
     //Method to show all prods
     getProducts(limit) {
@@ -27,6 +29,9 @@ class ProductManager {
         }
     }
 
+    //------------------------------//
+    //------------------------------//
+
     //find index of prod
     findIndex(id) {
         const index = this.fileProds.findIndex(obj => {
@@ -34,6 +39,9 @@ class ProductManager {
         })
         return index
     }
+
+    //------------------------------//
+    //------------------------------//
 
     //check if any key in new product is empty
     checkIfEmpty(object) {
@@ -47,6 +55,9 @@ class ProductManager {
         }
     }
 
+    //------------------------------//
+    //------------------------------//
+
     //Add item to products if there is no empty key
     addIfNotEmpty(user, prod) {
         if (user.checkIfEmpty(prod)) {
@@ -56,6 +67,9 @@ class ProductManager {
             user.addProduct(prod, admin)
         }
     }
+
+    //------------------------------//
+    //------------------------------//
 
     //Search product by ID in JSON
     searchById(id) {
@@ -68,7 +82,7 @@ class ProductManager {
                 })
                 const filtered = data.filter(i => i.id === id)
                 if (index === -1) {
-                    return ("Error, no existe el producto")
+                    return ("err")
                 }
                 return (filtered)
             })
@@ -77,6 +91,8 @@ class ProductManager {
             })
     }
 
+    //------------------------------//
+    //------------------------------//
 
     //Check if item exist
     checkIfExists(id) {
@@ -94,6 +110,9 @@ class ProductManager {
             })
     }
 
+    //------------------------------//
+    //------------------------------//
+
     //delete product by id
     deleteProd(id) {
         const index = this.fileProds.findIndex(obj => {
@@ -104,8 +123,11 @@ class ProductManager {
             return
         }
 
+        //------------------------------//
+        //------------------------------//
 
-        //cuando sobreescribo ordena el archivo y reescribe para que no quede desordenado
+
+        //rewrite the file and orders it alpha
         this.fileProds.splice(index, 1)
         this.products = this.fileProds.sort((a, b) => a.id - b.id)
 
@@ -119,18 +141,21 @@ class ProductManager {
 
     }
 
+    //------------------------------//
+    //------------------------------//
 
-    updateProduct(index,obj) {
 
-        //Recorre las keys del objeto de fileprods[index encontrado arriba] y si existen en el objeto
-        // que ingresó el usuario las reemplaza
+    updateProduct(index, obj) {
+
+        //itherates on the keys of the object and if it finds coincidence it replace it
+
         Object.keys(this.fileProds[index]).forEach(key => {
             if (key in obj) {
                 this.fileProds[index][key] = obj[key]
             }
         });
 
-        //Vuelve a escribir en el archivo ordenando los ids ascendente
+        //order the products alpha
         this.products = this.fileProds.sort((a, b) => a.id - b.id)
         this.fs.writeFile(this.path, JSON.stringify(this.products, null, 2), (err) => {
             if (err !== null) {
@@ -147,9 +172,7 @@ class ProductManager {
     // Method to add prod
     addProduct(prod, user) {
 
-        //Obtengo el lenght de fileprods y si ya existe un item en el lenght actual saltea 
-        //Evita no poder agregar mas productos si por ejemplo tengo 3 y elimino 1, queda un lenght de 2
-        // pero ya existe un item que tiene de id "lenght + 1", esto lo soluciona
+        //this functions check if there is deleted products in the file to not create any redundancy on the ids.
         let lenght = this.fileProds.length
         if (this.checkIfExists(lenght) === true) {
             lenght = lenght + 2
@@ -158,7 +181,7 @@ class ProductManager {
 
         const newProduct = {
             id: lenght + 1,
-            status : true,
+            status: true,
             title: prod.title,
             description: prod.description,
             price: prod.price,
@@ -166,8 +189,7 @@ class ProductManager {
             stock: prod.stock
         }
 
-        //Si un item con el mismo id de newProduct existe lo informa y finaliza, no debería llegar a
-        //ejecutarse nunca
+        //check if exists any product with the same id
         user.checkIfExists(newProduct.id)
             .then((exists) => {
                 if (exists) {
@@ -175,11 +197,11 @@ class ProductManager {
                     return
                 }
 
-                //sobreescribe products y lo ordena
+                //overwrite and sort
                 this.fileProds.push(newProduct)
                 this.products = this.fileProds.sort((a, b) => a.id - b.id)
 
-                //Escribo en el archivo
+                //write the file
                 this.fs.writeFile(this.path, JSON.stringify(this.products, null, 2), (err) => {
                     if (err !== null) {
                         console.log(err)
@@ -196,14 +218,6 @@ class ProductManager {
     }
 }
 
-
-
-const modificado = {
-    title: "modificadooooooooooooooo",
-
-}
-
-const admin = new ProductManager
 
 
 module.exports = ProductManager

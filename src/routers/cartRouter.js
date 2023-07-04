@@ -1,6 +1,8 @@
 const cartManager = require("../managers/cartManager")
 const admin = new cartManager
+const axios = require("axios")
 const { Router } = require("express")
+const { prodRouter } = require("./prodRouter")
 
 const cartRouter = Router()
 
@@ -13,6 +15,9 @@ cartRouter.post("/", (req, res) => {
 
 })
 
+//------------------------------//
+//------------------------------//
+
 
 //see carts
 cartRouter.get("/:cid", (req, res) => {
@@ -20,15 +25,32 @@ cartRouter.get("/:cid", (req, res) => {
 
     if (admin.getIndex(id) === -1) {
         res.status(404).json({
-            error: "No existe el producto"
+            error: `"No existe el carrito con id ${id}"`
         })
     }
     res.send(admin.getCart(id))
 })
 
+//------------------------------//
+//------------------------------//
+
 //add item to selected cart
-cartRouter.post("/:cid/products/:pid", (req, res) => {
-    
+cartRouter.post("/:cid/products/:pid", async (req, res) => {
+    const cartId = parseInt(req.params.cid)
+    const prodId = parseInt(req.params.pid)
+
+    //make a get to products to check if prod exists
+
+    const getResponse = await axios.get("http://localhost:8080/products/" + prodId)
+
+
+    if (getResponse.data === "err") {
+        return res.status(404).json({
+            error: "No existe el producto"
+        })
+    }
+    return res.send(admin.addProdToCart(cartId, prodId, parseInt(req.body.quantity)))
+
 })
 
 module.exports = cartRouter
