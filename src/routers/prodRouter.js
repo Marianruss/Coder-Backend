@@ -17,14 +17,13 @@ prodRouter.get("/", (req, res) => {
         return res.send(admin.getProducts())
     }
     else {
-        // const prods = prods.slice(0, limit)
         return res.send(admin.getProducts(limit))
     }
 
 })
 
 
-//Traer un producto por ID
+//get prod by id
 
 prodRouter.get("/:id", async (req, res) => {
     try {
@@ -43,13 +42,13 @@ prodRouter.get("/:id", async (req, res) => {
 })
 
 
-//Agregar un producto
+//add prod
 prodRouter.post("/add", (req, res) => {
     const prod = req.body
     return res.send(admin.addProduct(prod, admin))
 })
 
-//Borrar un producto
+//delete prod
 prodRouter.delete("/delete/:id", (req, res) => {
     const id = parseInt(req.params.id)
 
@@ -64,15 +63,13 @@ prodRouter.delete("/delete/:id", (req, res) => {
 })
 
 
-//Editar un producto
+//modify prod
 prodRouter.put("/edit/:id", (req, res) => {
     const id = parseInt(req.params.id)
-    // const obj = req.body
 
-    //Obtiene index del objeto con id proporcionada.
+    //get index of the given prod
     const index = admin.findIndex(id)
-    //Comprueba si el body tiene campos que coincidan con campos del  producto con el id
-    // y escribe si los tiene
+    //Check if prod have keys that match the given object and overwrites it
 
     return res.send(admin.updateProduct(index,req.body))
 
