@@ -9,9 +9,26 @@ const cartRouter = Router()
 //add cart
 cartRouter.post("/", (req, res) => {
     const cart = req.body
-    admin.addCart(cart)
 
-    return res.send(cart)
+    const emptyCart = admin.hasEmptyKey(cart.products)
+
+    const emptyProd = () => {
+        for (let i = 0; i < cart.products.length; i++) {
+            if(admin.hasEmptyKey(cart.products[i] === true)){
+                return true
+            }
+            
+        }
+        return false
+    }
+
+    if (emptyCart === true) {
+        return res.status(404).json({
+            error: "El carrito no puede tener campos vacíos"
+        })
+    }
+    admin.addCart(cart)
+    return res.send(emptyProd())
 
 })
 
@@ -48,7 +65,7 @@ cartRouter.post("/:cid/products/:pid", async (req, res) => {
     }
 
 
-    const getResponse = await axios.get(`http://localhost:8080/products/${prodId}`)   
+    const getResponse = await axios.get(`http://localhost:8080/products/${prodId}`)
 
     if (getResponse.data === "err") {
         return res.status(404).json({

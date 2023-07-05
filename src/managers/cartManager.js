@@ -21,6 +21,18 @@ class cartManager {
     //------------------------------//
 
 
+    hasEmptyKey(obj){
+        for (const key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                if (obj[key].length === 0) {
+                    return true
+                }
+                return false
+
+            }
+        }
+    }
+
 
     //add new cart
     addCart(cart) {
@@ -31,7 +43,7 @@ class cartManager {
 
         const newCart = {
             id: lenght + 1,
-            clientName: cart.name,
+            clientName: cart.customer,
             products: cart.products
         }
 

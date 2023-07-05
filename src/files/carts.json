@@ -1,18 +1,31 @@
 [
   {
     "id": 1,
+    "clientName": "asd",
     "products": [
       {
-        "productId": "2",
-        "quantity": "2"
-      },
+        "prodId": "",
+        "quantity": "as"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "clientName": "asd",
+    "products": [
       {
-        "productId": "1",
-        "quantity": "16"
-      },
+        "prodId": "",
+        "quantity": "as"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "clientName": "asd",
+    "products": [
       {
-        "productId": "4",
-        "quantity": "12"
+        "prodId": "asd",
+        "quantity": "as"
       }
     ]
   }
