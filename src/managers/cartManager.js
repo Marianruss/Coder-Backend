@@ -52,6 +52,7 @@ class cartManager {
 
     //show cart by id
     getCart(id) {
+
         const filtered = this.fileCarts.filter(cart => {
             return cart.id === id
         })

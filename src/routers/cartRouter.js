@@ -41,8 +41,14 @@ cartRouter.post("/:cid/products/:pid", async (req, res) => {
 
     //make a get to products to check if prod exists
 
-    const getResponse = await axios.get("http://localhost:8080/products/" + prodId)
+    if (admin.getIndex(cartId) === -1) {
+        res.status(404).json({
+            error: `"No existe el carrito con id ${cartId}"`
+        })
+    }
 
+
+    const getResponse = await axios.get(`http://localhost:8080/products/${prodId}`)   
 
     if (getResponse.data === "err") {
         return res.status(404).json({
