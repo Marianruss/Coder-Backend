@@ -1,10 +1,19 @@
+const { response } = require("express");
+const httpServer = require("../httpServer");
+const { Socket } = require("socket.io");
+const {Server} = require("socket.io")
 
 class ProductManager {
     fs = require("fs")
+    socketServer = new Server(httpServer)
+
+
+    
 
     constructor() {
         this.products = []
         this.path = "./files/products.json"
+        
 
 
         const fileData = this.fs.readFileSync(this.path, "utf-8");
@@ -22,7 +31,9 @@ class ProductManager {
     //Method to show all prods
     getProducts(limit) {
         if (!limit) {
+            Socket.emit("msg","test")
             return this.fileProds
+            
         }
         else {
             return this.fileProds.slice(0, limit)
@@ -207,6 +218,8 @@ class ProductManager {
                         console.log(err)
                         return err
                     }
+                    
+                    
                 })
             })
             .catch((err) => {

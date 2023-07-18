@@ -18,33 +18,33 @@
   {
     "id": 3,
     "status": true,
-    "title": "pepsi",
-    "description": "pepsi",
-    "price": "200",
-    "stock": "20"
+    "title": "test",
+    "description": "this is test 2",
+    "price": "asd2",
+    "stock": 12
   },
   {
     "id": 4,
     "status": true,
-    "title": "editado",
-    "description": "pepsi",
-    "price": "200",
-    "stock": "20"
+    "title": "test",
+    "description": "this is test 2",
+    "price": "asd2",
+    "stock": 12
   },
   {
     "id": 5,
     "status": true,
-    "title": "pepsi",
-    "description": "pepsi",
-    "price": "200",
-    "stock": "20"
+    "title": "test",
+    "description": "this is test 2",
+    "price": "asd2",
+    "stock": 12
   },
   {
     "id": 6,
     "status": true,
-    "title": "mariano",
-    "description": "pepsi",
-    "price": "200",
-    "stock": "20"
+    "title": "test",
+    "description": "this is test 2",
+    "price": "asd2",
+    "stock": 12
   }
 ]

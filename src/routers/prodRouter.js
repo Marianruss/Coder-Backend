@@ -1,24 +1,51 @@
 const productManager = require("../managers/productManager")
-const admin = new productManager
+const admin = new productManager()
 const { Router } = require("express")
-
-
+const handlebars = require("handlebars")
+const {Server, Socket} = require("socket.io")
 const prodRouter = Router()
 
 
 
 //traer todos los products, se puede poner un limit
 
+prodRouter.get("/realTime", (req, res) => {
+
+    const limit = parseInt(req.query.limit)
+    let params = {}
+
+    if (!limit) {
+        params = {
+            title: "Productos",
+            prods: admin.getProducts()
+        }
+
+    }
+    else {
+        params = {
+            title: "Productos",
+            prods: admin.getProducts(limit)
+        }
+    }   
+
+    
+    return res.render('index', params)
+
+})
+
 prodRouter.get("/", (req, res) => {
 
     const limit = parseInt(req.query.limit)
 
+
     if (!limit) {
-        return res.send(admin.getProducts())
+        prods = admin.getProducts()
     }
     else {
-        return res.send(admin.getProducts(limit))
+        prods = admin.getProducts(limit)
     }
+
+    return res.send(prods)
 
 })
 
@@ -29,12 +56,13 @@ prodRouter.get("/:id", async (req, res) => {
     try {
         const id = parseInt(req.params.id)
         const prod = await admin.searchById(id)
-        if (prod === ""){
+        if (prod === "") {
             return res.status(404).json({
                 error: "No existe el producto"
             })
-        }else{
-        return res.send(prod)}
+        } else {
+            return res.send(prod)
+        }
     }
     catch (err) {
         return res.status(500).send(err);
@@ -71,7 +99,7 @@ prodRouter.put("/edit/:id", (req, res) => {
     const index = admin.findIndex(id)
     //Check if prod have keys that match the given object and overwrites it
 
-    return res.send(admin.updateProduct(index,req.body))
+    return res.send(admin.updateProduct(index, req.body))
 
 })
 
