@@ -1,19 +1,13 @@
 const { response } = require("express");
 const httpServer = require("../httpServer");
-const { Socket } = require("socket.io");
-const {Server} = require("socket.io")
+const { Exception } = require("handlebars");
 
 class ProductManager {
     fs = require("fs")
-    socketServer = new Server(httpServer)
-
-
-    
-
     constructor() {
         this.products = []
         this.path = "./files/products.json"
-        
+
 
 
         const fileData = this.fs.readFileSync(this.path, "utf-8");
@@ -31,9 +25,8 @@ class ProductManager {
     //Method to show all prods
     getProducts(limit) {
         if (!limit) {
-            Socket.emit("msg","test")
             return this.fileProds
-            
+
         }
         else {
             return this.fileProds.slice(0, limit)
@@ -156,26 +149,32 @@ class ProductManager {
     //------------------------------//
 
 
-    updateProduct(index, obj) {
-
-        //itherates on the keys of the object and if it finds coincidence it replace it
-
-        Object.keys(this.fileProds[index]).forEach(key => {
-            if (key in obj) {
-                this.fileProds[index][key] = obj[key]
+    async updateProduct(index, obj, user) {
+        try {
+            if (user.checkIfEmpty(obj)) {
+                throw new Error("Object have empty keys ")
             }
-        });
 
-        //order the products alpha
-        this.products = this.fileProds.sort((a, b) => a.id - b.id)
-        this.fs.writeFile(this.path, JSON.stringify(this.products, null, 2), (err) => {
-            if (err !== null) {
-                console.log(err)
-                return err
-            }
-        })
+            //itherates on the keys of the object and if it finds coincidence it replace it
+            Object.keys(this.fileProds[index]).forEach(key => {
+                if (key in obj) {
+                    this.fileProds[index][key] = obj[key]
 
-
+                    //order the products by ID
+                    this.products = this.fileProds.sort((a, b) => a.id - b.id)
+                    this.fs.writeFile(this.path, JSON.stringify(this.products, null, 2), (err) => {
+                        if (err !== null) {
+                            throw new Error("Error al leer el archivo")
+                        }
+                    })
+                }
+            })
+        }
+        catch (err) {
+            // console.log("tst")
+            return (err)
+        }
+        return ("success")
     }
 
 
@@ -218,8 +217,8 @@ class ProductManager {
                         console.log(err)
                         return err
                     }
-                    
-                    
+
+
                 })
             })
             .catch((err) => {
