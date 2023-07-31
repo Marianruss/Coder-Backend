@@ -5,7 +5,7 @@ const initSocket = require("./utils/socket")
 const { static } = require("express")
 const loginRouterFn = require("./routers/loginRouter")
 const prodRouterFn = require("./routers/prodRouter")
-// const admin = new productManager
+const mongoose = require("mongoose")
 
 
 
@@ -15,6 +15,16 @@ const httpServer = app.listen(PORT, () => {
     console.log(`Server running in port ${PORT}...`)
 })
 
+const mongoConnect = "mongodb+srv://marianruss:Darksouls3@cluster0.n9qkduy.mongodb.net/geekers-store?retryWrites=true&w=majority"
+
+mongoose.connect(mongoConnect)
+    .catch( err => {
+        if (err){
+            console.log("Can't connect to DB", err)
+        } 
+    }
+)
+
 const socket = initSocket(httpServer)
 
 //Routers
@@ -22,6 +32,7 @@ const prodRouter = prodRouterFn(socket)
 const cartRouter = require("./routers/cartRouter")
 const chatRouter = require("./routers/chatRouter")
 const loginRouter = loginRouterFn(socket)
+const userRouter = require("./routers/userRouter")
 
 
 //Handlebars Views
@@ -39,6 +50,7 @@ app.use("/products", prodRouter)
 app.use("/carts", cartRouter)
 app.use("/chat", chatRouter)
 app.use("/login",loginRouter)
+app.use("/users",userRouter)
 
 
 
