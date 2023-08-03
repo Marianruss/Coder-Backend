@@ -3,27 +3,10 @@ const checkIfEmpty = require('../../functions/functions');
 const cartModel = require("../models/cart.model")
 const prodModel = require("../models/product.model")
 
+
+
 class cartManager {
     fs = require('fs')
-
-
-    //Constructor
-    constructor() {
-        this.carts = []
-        this.path = "./files/carts.json"
-
-        const fileData = this.fs.readFileSync(this.path, "utf-8");
-        if (fileData.trim().length === 0) {
-            this.fileCarts = [];
-        } else {
-            this.fileCarts = JSON.parse(fileData, null, 2);
-            this.fileCarts.sort((a, b) => a.id - b.id)
-        }
-    }
-
-    //------------------------------//
-    //------------------------------//
-
 
     hasEmptyKey(obj) {
         for (const key in obj) {
@@ -79,32 +62,65 @@ class cartManager {
         //find the cart 
         const cart = await cartModel.findOne({ code: cid })
         const prod = await prodModel.find({ code: pid })
-
-        console.log(prod)
+        console.log(cart)
 
         if (prod.length === 0) {
             return "no product"
         }
 
+        else if (cart === null) {
+            return "no cart"
+        }
+
         const existingProduct = cart.products.findIndex(p => p.prodId === pid);
 
+        //if the index of the prod already exists it's add the quantity 
         if (existingProduct != -1) {
             cart.products[existingProduct].quantity += quant;
 
         }
-        else{
+        //else it pushes the product to products
+        else {
             cart.products.push({ prodId: pid, quantity: quant });
         }
 
-        console.log(cart)
-        
+        //Mark products as modified
         await cart.markModified("products")
 
+        //Save changes
         await cart.save()
+        const log = `Se agregó al carrito el product con id ${pid}`
 
-        // return "added"
+        this.fs.appendFile(this.logs, log, "utf-8", (err) => {
+            if (err) {
+                console.log(err)
+            }
+        })
+
+        return "added"
 
     }
+
+
+    //------------------------------//
+    //------------------------------//
+
+
+    async deleteCart(cartId) {
+        const cart = await cartModel.findOne({ code: cartId })
+
+        if (cart === null){
+            return "no cart"
+        }
+        try {
+            await cartModel.deleteOne({code:cartId})
+            return "deleted"
+
+        } catch (err) {
+            return err
+        }
+    }
+
 }
 
 

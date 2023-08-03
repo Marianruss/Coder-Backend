@@ -10,13 +10,6 @@ const cartRouter = Router()
 cartRouter.post("/add", async (req, res) => {
     const cart = req.body
 
-    // const emptyCart = admin.hasEmptyKey(cart.products)
-
-    // if (emptyCart === true) {
-    //     return res.status(404).json({
-    //         error: "El carrito no puede tener campos vacíos"
-    //     })
-    // }
 
     const created = await admin.addCart(cart)
 
@@ -71,7 +64,39 @@ cartRouter.put("/:cid/products/:pid", async (req, res) => {
         added = await admin.addProdToCart(cartId, prodId, quant)
     }
 
-    return res.send(added)
+    switch (added) {
+        case "no product":
+            return res.status(404).json({
+                msg: `There is no product with ID ${prodId}`
+            })
+    
+        case "added":
+            return res.status(200).json({
+                msg: `Product with ID ${prodId} added to cart`
+            })
+        
+        case "no cart":
+            return res.status(404).json({
+                msg: `There is no cart with ID ${cartId}`
+            })
+    }
+})
+
+//delete cart
+cartRouter.delete("/delete/:cid", (req,res) =>{
+    const cartId = parseInt(req.params.cid)
+    const deleted = admin.deleteCart(cartId)
+    
+    switch (deleted) {
+        case "deleted":
+            return res.status(200).json({
+                msg: `Se borró el carro con ID ${cartId}`
+            })    
+        case "no cart":
+            return res.status(404).json({
+                msg: `No existe el carrito con ID ${cartId}`
+            })
+    }
 })
 
 module.exports = cartRouter
