@@ -20,17 +20,21 @@ const prodRouterFn = (io) => {
             let params = {}
 
             if (!limit) {
+                let prods = await admin.getProducts()
+
+                console.log(prods)
                 params = {
                     title: "Productos",
-                    prods: admin.getProducts()
+                    prods: prods
                 }
+
 
 
             }
             else {
                 params = {
                     title: "Productos",
-                    prods: admin.getProducts(limit)
+                    prods: await admin.getProducts(limit)
                 }
             }
             return res.render('index', params)
@@ -53,6 +57,7 @@ const prodRouterFn = (io) => {
             const limit = parseInt(req.query.limit)
             if (!limit) {
                 prods = await admin.getProducts()
+                console.log(prods)
             }
             else {
                 prods = await admin.getProducts(limit)
@@ -77,7 +82,7 @@ const prodRouterFn = (io) => {
             const code = parseInt(req.params.code)
             const prod = await admin.searchById(code)
             console.log(prod)
-            if (typeof(prod) != "object") {
+            if (typeof (prod) != "object") {
                 return res.status(404).json({
                     error: "No existe el producto"
                 })
@@ -128,13 +133,13 @@ const prodRouterFn = (io) => {
         try {
             const code = parseInt(req.params.code)
             const prod = await admin.deleteProd(code)
-            
+
 
             return prod.deletedCount === 1
-            ? res.status(200).json("Producto eliminado con éxito")
-            : res.status(400).json({
-                error: "No existe el producto"
-            })
+                ? res.status(200).json("Producto eliminado con éxito")
+                : res.status(400).json({
+                    error: "No existe el producto"
+                })
         }
 
         catch (err) {

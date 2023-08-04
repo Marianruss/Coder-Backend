@@ -2,21 +2,21 @@ const { response } = require("express");
 const httpServer = require("../../httpServer");
 const { Exception } = require("handlebars");
 const prodModel = require("../../dao/models/product.model")
-
+const userModel = require("../../dao/models/user.model")
 
 class ProductManager {
     fs = require("fs")
     constructor() {
-        
+
     }
 
     //------------------------------//
     //------------------------------//
 
     //Method to show all prods
-    getProducts(limit) {
+    async getProducts(limit) {
         if (!limit) {
-            return prodModel.find()
+            return await userModel.find()
         }
         else {
             return prodModel.find().limit(limit)
@@ -91,13 +91,13 @@ class ProductManager {
 
 
     async updateProduct(code, obj, user) {
-        const prod = await prodModel.find({code:code})
+        const prod = await prodModel.find({ code: code })
         console.log(obj)
         try {
             if (user.checkIfEmpty(obj)) {
                 throw new Error("Object have empty keys ")
             }
-            else if (prod.length === 0){
+            else if (prod.length === 0) {
                 throw new Error(`There is no product with ID ${id}`)
             }
 
@@ -109,10 +109,10 @@ class ProductManager {
                 price: obj.price || prod.email
             }
 
-            await prodModel.updateOne({code:code},productUpdated)
+            await prodModel.updateOne({ code: code }, productUpdated)
 
             //itherates on the keys of the object and if it finds coincidence it replace it
-            
+
         }
         catch (err) {
             return (err)
