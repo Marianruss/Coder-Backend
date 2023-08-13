@@ -6,6 +6,7 @@ const { static } = require("express")
 const loginRouterFn = require("./routers/loginRouter")
 const prodRouterFn = require("./routers/prodRouter")
 const mongoose = require("mongoose")
+// const asd = require
 
 
 
@@ -25,6 +26,8 @@ mongoose.connect(mongoConnect)
     }
 )
 
+
+
 const socket = initSocket(httpServer)
 
 //Routers
@@ -37,8 +40,9 @@ const userRouter = require("./routers/userRouter")
 
 //Handlebars Views
 app.engine('handlebars', handlebars.engine())
-app.set('views', './views')
 app.set('view engine', 'handlebars')
+app.set('views', './views')
+
 
 //Express encode and public
 app.use(express.json())

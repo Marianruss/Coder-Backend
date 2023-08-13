@@ -20,6 +20,8 @@ class cartManager {
         }
     }
 
+    //------------------------------//
+    //------------------------------//
 
     //add new cart
     async addCart(cart) {
@@ -89,13 +91,13 @@ class cartManager {
 
         //Save changes
         await cart.save()
-        const log = `Se agregó al carrito el product con id ${pid}`
+        // const log = `Se agregó al carrito el product con id ${pid}`
 
-        this.fs.appendFile(this.logs, log, "utf-8", (err) => {
-            if (err) {
-                console.log(err)
-            }
-        })
+        // // this.fs.appendFile(this.logs, log, "utf-8", (err) => {
+        // //     if (err) {
+        // //         console.log(err)
+        // //     }
+        // // })
 
         return "added"
 

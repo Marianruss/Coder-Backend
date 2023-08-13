@@ -1,0 +1,50 @@
+<div>
+    <h2>{{{title}}}</h2>
+    <div>
+
+        <form class="filter-form" id="filter">
+            <select name="sort" id="sort-select" class="filter-opt">
+                <option value="" disabled selected hidden>Filter by price</option>
+                <option value="asc">Precio mas bajo</option>
+                <option value="desc">Precio mas alto</option>
+            </select>
+            <select class="filter-opt" id="quantity-select">
+                <option value="" disabled selected hidden>Items per page</option>
+                <option value="4">4</option>
+                <option value="6">6</option>
+                <option value="10">10</option>
+            </select>
+            <button class="filter-button" type="submit">Filter</button>
+
+        </form>
+        <div class="products-grid">
+            {{#each prods}}
+            <div class="prod-container" id="prod" data-id={{this.code}}>
+                <img src="https://placehold.co/200x250">
+                <p>{{this.title}}</p>
+                <p>${{this.price}}</p>
+                <p>code: {{this.code}}</p>
+                <button id="delete-button" class="prod-button" data-id={{this.code}}>Borrar</button>
+                <form class="cart-form" id="cart-form">
+                    <p>cart ID</p>
+                    <input type="text" name="cart" id="cart-id" class="cart-id">
+                    <button id="add-cart" class="prod-button" type="submit">Add to cart</button>
+                </form>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+
+    <div class="pager">
+        <ul class="pagination pagination-sm">
+            {{#each pages}}
+            <li class="page-item"><a class="page-link" href="#">{{this}}</a></li>
+            {{/each}}
+        </ul>
+
+    </div>
+</div>
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/productsSocket.js"></script>

@@ -10,6 +10,4 @@ const initSocket = (httpServer) => {
     return socketServer
 }
 
-// socketServer.on
-
 module.exports = initSocket

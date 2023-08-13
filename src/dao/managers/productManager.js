@@ -3,6 +3,8 @@ const httpServer = require("../../httpServer");
 const { Exception } = require("handlebars");
 const prodModel = require("../../dao/models/product.model")
 const userModel = require("../../dao/models/user.model")
+const aggregates = require("../../utils/agregates/agregates")
+
 
 class ProductManager {
     fs = require("fs")
@@ -14,12 +16,41 @@ class ProductManager {
     //------------------------------//
 
     //Method to show all prods
-    async getProducts(limit) {
+    async getProducts(limit, order) {
+        var data = {}
+        console.log({order,limit})
+    
+
         if (!limit) {
-            return await userModel.find()
+            switch (order) {
+                case "asc":
+                    data = await prodModel.aggregatePaginate(aggregates.orderAsc)
+                    return data
+
+                case "desc":
+                    data = await prodModel.aggregatePaginate(aggregates.orderDesc)
+                    return data
+
+                default:
+                    data = await prodModel.aggregatePaginate()
+                    // console.log(data)
+                    return data
+
+            }
         }
         else {
-            return prodModel.find().limit(limit)
+            switch (order) {
+                case "asc":
+                    data = await prodModel.aggregatePaginate(aggregates.orderAsc, { limit: limit })
+                    return data
+                case "desc":
+                    data = await prodModel.aggregatePaginate(aggregates.orderDesc, { limit: limit })
+                    return data
+                default:
+                    data = await prodModel.paginate({},{limit:limit})
+                    return data
+            }
+
         }
     }
 

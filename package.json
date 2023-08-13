@@ -9,12 +9,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "alertify": "^0.3.0",
     "alertifyjs": "^1.13.1",
     "axios": "^1.4.0",
     "express": "^4.18.2",
-    "express-handlebars": "^7.0.7",
-    "handlebars": "^4.7.7",
+    "express-handlebars": "^7.1.2",
+    "js": "^0.1.0",
     "mongoose": "^7.4.1",
+    "mongoose-aggregate-paginate": "^2.0.2",
+    "mongoose-aggregate-paginate-v2": "^1.0.6",
     "mongoose-paginate": "^5.0.3",
     "mongoose-paginate-v2": "^1.7.31",
     "multer": "^1.4.5-lts.1",
@@ -25,5 +28,8 @@
     "tailwindcss": "^3.3.2",
     "validator": "^13.9.0"
   },
-  "description": "��#\u0000 \u0000c\u0000o\u0000d\u0000e\u0000r\u0000-\u0000b\u0000a\u0000c\u0000k\u0000e\u0000n\u0000d\u0000\r\u0000 \u0000"
+  "description": "��#\u0000 \u0000c\u0000o\u0000d\u0000e\u0000r\u0000-\u0000b\u0000a\u0000c\u0000k\u0000e\u0000n\u0000d\u0000\r\u0000 \u0000",
+  "devDependencies": {
+    "handlebars": "^4.5.0"
+  }
 }

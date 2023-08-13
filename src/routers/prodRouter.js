@@ -1,5 +1,6 @@
 const productManager = require("../dao/managers/productManager")
 const admin = new productManager()
+const toObject = require("mongoose")
 const { Router } = require("express")
 const handlebars = require("handlebars")
 const { Server, Socket } = require("socket.io")
@@ -8,68 +9,65 @@ const prodModel = require("../dao/models/product.model")
 const { isArray } = require("util")
 
 
-
 //traer todos los products, se puede poner un limit
 const prodRouterFn = (io) => {
-
-    prodRouter.get("/realTime", async (req, res) => {
-
-        try {
-
-            const limit = parseInt(req.query.limit)
-            let params = {}
-
-            if (!limit) {
-                let prods = await admin.getProducts()
-
-                console.log(prods)
-                params = {
-                    title: "Productos",
-                    prods: prods
-                }
-
-
-
-            }
-            else {
-                params = {
-                    title: "Productos",
-                    prods: await admin.getProducts(limit)
-                }
-            }
-            return res.render('index', params)
-        }
-
-        catch (err) {
-            console.log(err)
-            return res.status(500).json({
-                error: "Algo salió mal"
-            })
-        }
-
-
-    })
 
     prodRouter.get("/", async (req, res) => {
 
         try {
-
+            // const params = {}
             const limit = parseInt(req.query.limit)
+            const order = req.query.order
+            const pages = []
+            var finalProds = []
+
+
+            const prods = await admin.getProducts(limit, order)
+            // console.log(prods)
+
             if (!limit) {
-                prods = await admin.getProducts()
-                console.log(prods)
+                if (order === "") {
+                    //if there is no sort query or the query param is empty it remaps the prods as objects
+                    finalProds = prods.docs.map(item => item.toObject())
+                }
+                else {
+                    finalProds = prods.docs
+                }
+
             }
             else {
-                prods = await admin.getProducts(limit)
+                //if there is no sort query or the query param is empty it remaps the prods as objects
+                if (order === "") {
+                    finalProds = prods.docs.map(item => item.toObject())
+                }
+                else {
+                    finalProds = prods.docs
+                }
             }
 
-            return res.send(prods)
+            for (let i = 1; i < prods.totalPages + 1; i++) {
+                pages.push(i)
+            }
+
+            params = {
+                title: "productos",
+                prods: finalProds,
+                pages: pages,
+                hasPrevPage: prods.hasPrevPage,
+                hasNextPage: prods.hasNextPage,
+                pagingCounter: prods.pagingCounter
+            }
+            // console.log(params)
+
+
+
+            res.render('products', params)
 
         }
         catch (err) {
             console.log(err)
             return res.status(500).json({
-                error: "Algo salió mal"
+                error: `Algo salió mal, ${err}`,
             })
         }
     })
@@ -128,15 +126,18 @@ const prodRouterFn = (io) => {
     })
 
     //delete prod
-    prodRouter.delete("/delete/:code", async (req, res) => {
+    prodRouter.post("/delete/:code", async (req, res) => {
 
         try {
             const code = parseInt(req.params.code)
             const prod = await admin.deleteProd(code)
+            io.emit("delProd", prod.code)
 
 
             return prod.deletedCount === 1
-                ? res.status(200).json("Producto eliminado con éxito")
+                ? res.status(200).json({
+                    msg: "Producto eliminado"
+                })
                 : res.status(400).json({
                     error: "No existe el producto"
                 })

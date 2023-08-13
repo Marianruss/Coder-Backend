@@ -51,7 +51,7 @@ cartRouter.get("/:cid", async (req, res) => {
 //------------------------------//
 
 //add item to selected cart
-cartRouter.put("/:cid/products/:pid", async (req, res) => {
+cartRouter.post("/:cid/products/:pid", async (req, res) => {
     const cartId = parseInt(req.params.cid)
     const prodId = parseInt(req.params.pid)
     let quant = parseInt(req.query.quant)
