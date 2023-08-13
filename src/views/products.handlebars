@@ -19,12 +19,12 @@
         </form>
         <div class="products-grid">
             {{#each prods}}
-            <div class="prod-container" id="prod" data-id={{this.code}}>
+            <div class="prod-container" id="prod">
                 <img src="https://placehold.co/200x250">
                 <p>{{this.title}}</p>
                 <p>${{this.price}}</p>
                 <p>code: {{this.code}}</p>
-                <button id="delete-button" class="prod-button" data-id={{this.code}}>Borrar</button>
+                <button id="delete" class="prod-button" data-id={{this.code}}>Borrar</button>
                 <form class="cart-form" id="cart-form">
                     <p>cart ID</p>
                     <input type="text" name="cart" id="cart-id" class="cart-id">

@@ -1,22 +1,29 @@
 
 
 //Delete prod event listener
-const deleteButtons = document.querySelectorAll(".delete-button")
-deleteButtons.forEach(button => {
-    button.addEventListener("click", async () => {
-        const url = window.location.href
+
+
+// const url = document.location.href
+const url = window.location.href
+document.addEventListener("DOMContentLoaded", () => {
+    
+    const deleteButtons = document.querySelectorAll("#delete")
+    deleteButtons.forEach(button => {
         const id = button.getAttribute("data-id")
-        const response = await fetch(`http://localhost:8080/products/delete/${id}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" }
-        });
-        if (response.ok) {
-            window.location.href = url
-        }
+
+        button.addEventListener("click", async () => {
+            const response = await fetch(`http://localhost:8080/products/delete/${id}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" }
+            });
+            if (response.ok) {
+                window.location.href = url
+            }
+        })
+    });
+})
 
 
-    })
-});
 
 
 //filter form event listener
