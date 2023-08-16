@@ -7,6 +7,7 @@ const { Server, Socket } = require("socket.io")
 const prodRouter = Router()
 const prodModel = require("../dao/models/product.model")
 const { isArray } = require("util")
+const { collectibles } = require("../utils/agregates/agregates")
 
 
 //traer todos los products, se puede poner un limit
@@ -15,44 +16,56 @@ const prodRouterFn = (io) => {
     prodRouter.get("/", async (req, res) => {
 
         try {
-            // const params = {}
-            const limit = parseInt(req.query.limit)
-            const order = req.query.order
+            var limit = parseInt(req.query.limit)
+            const sort = req.query.sort
             const pages = []
+            var query
+            var page = req.query.page
+            const category = req.query.category === "juegos" ? "juegos" : req.query.category === "coleccionables" ?  "coleccionables" : null
             var finalProds = []
 
+            console.log(category)   
+            if (!page) page = 1
+            
+            if (!limit) limit = 10
 
-            const prods = await admin.getProducts(limit, order)
+            const order = sort === "asc" ? { price: 1 } : sort === "desc" ? { price: -1 } : {}
+
+            var pageOptions = {
+                page,
+                limit,
+                order
+            }
+
+            query= {
+                category
+            }
+
+            if (!category) query = {}
+
+            
+
+            console.log(query,pageOptions)
+
+
+            const prods = await admin.getProducts(query, pageOptions, limit, page)
             // console.log(prods)
 
-            if (!limit) {
-                if (order === "") {
-                    //if there is no sort query or the query param is empty it remaps the prods as objects
-                    finalProds = prods.docs.map(item => item.toObject())
-                }
-                else {
-                    finalProds = prods.docs
-                }
+            finalProds = prods.docs.map(item => item.toObject())
 
-            }
-            else {
-                //if there is no sort query or the query param is empty it remaps the prods as objects
-                if (order === "") {
-                    finalProds = prods.docs.map(item => item.toObject())
-                }
-                else {
-                    finalProds = prods.docs
-                }
-            }
+            // console.log(finalProds)
 
             for (let i = 1; i < prods.totalPages + 1; i++) {
                 pages.push(i)
             }
 
+
+
             params = {
-                title: "productos",
+                title: "Productos",
                 prods: finalProds,
                 pages: pages,
+                isActualPage: true,
                 hasPrevPage: prods.hasPrevPage,
                 hasNextPage: prods.hasNextPage,
                 pagingCounter: prods.pagingCounter
@@ -126,7 +139,7 @@ const prodRouterFn = (io) => {
     })
 
     //delete prod
-    prodRouter.post("/delete/:code", async (req, res) => {
+    prodRouter.delete("/delete/:code", async (req, res) => {
 
         try {
             const code = parseInt(req.params.code)

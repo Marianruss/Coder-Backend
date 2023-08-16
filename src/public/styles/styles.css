@@ -1,5 +1,10 @@
 body {
     background-image: linear-gradient(#0b0610, #123b6a, #0b0610);
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    max-width: 900px;
+    background-position: 50%;
 }
 
 .chat-window {
@@ -59,7 +64,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 200px;
+    width: 250px;
     /* height: 250px; */
     /* background-color: transparent; */
     box-shadow: rgba(0, 0, 0, 0.404) 5px 5px 5px;
@@ -94,6 +99,12 @@ body {
     background-color: #fcc243;
     color: black;
     text-shadow: black;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.title{
+    color: #fcc243;
+    margin-top: 50px;
 }
 
 .filter-form {
@@ -113,3 +124,15 @@ body {
 .cart-id{
     width: 30px;
 }
+
+.page-link{
+    background-color: #fcc243;
+    color:white;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.selected{
+    background-color: grey;
+    color:white
+}
+

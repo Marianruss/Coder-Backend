@@ -1,7 +1,6 @@
 <div>
-    <h2>{{{title}}}</h2>
+    <h2 class="title">{{{title}}}</h2>
     <div>
-
         <form class="filter-form" id="filter">
             <select name="sort" id="sort-select" class="filter-opt">
                 <option value="" disabled selected hidden>Filter by price</option>
@@ -14,20 +13,27 @@
                 <option value="6">6</option>
                 <option value="10">10</option>
             </select>
+            <select id="cat-select">
+                <option value="" disabled selected hidden>Filter by category</option>
+                <option value="juegos">Juegos</option>
+                <option value="coleccionables">Coleccionables</option>
+                
+            </select>
+
             <button class="filter-button" type="submit">Filter</button>
 
         </form>
         <div class="products-grid">
             {{#each prods}}
-            <div class="prod-container" id="prod">
-                <img src="https://placehold.co/200x250">
+            <div class="prod-container"  id="prod">
+                <a href="https://www.facebook.com"><img src="https://placehold.co/250x300"></a>
                 <p>{{this.title}}</p>
                 <p>${{this.price}}</p>
                 <p>code: {{this.code}}</p>
                 <button id="delete" class="prod-button" data-id={{this.code}}>Borrar</button>
-                <form class="cart-form" id="cart-form">
+                <form class="cart-form" id="cart-form" data-id={{this.code}}>
                     <p>cart ID</p>
-                    <input type="text" name="cart" id="cart-id" class="cart-id">
+                    <input type="text" name="cart" id="cart-id" class="cart-id" placeholder="ID">
                     <button id="add-cart" class="prod-button" type="submit">Add to cart</button>
                 </form>
             </div>
@@ -38,7 +44,7 @@
     <div class="pager">
         <ul class="pagination pagination-sm">
             {{#each pages}}
-            <li class="page-item"><a class="page-link" href="#">{{this}}</a></li>
+            <li class="page-item"><button class="page-link" page-id={{this}} id="page">{{this}}</button></li>
             {{/each}}
         </ul>
 

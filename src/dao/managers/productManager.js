@@ -3,7 +3,8 @@ const httpServer = require("../../httpServer");
 const { Exception } = require("handlebars");
 const prodModel = require("../../dao/models/product.model")
 const userModel = require("../../dao/models/user.model")
-const aggregates = require("../../utils/agregates/agregates")
+const aggregates = require("../../utils/agregates/agregates");
+const { privateDecrypt } = require("crypto");
 
 
 class ProductManager {
@@ -16,42 +17,12 @@ class ProductManager {
     //------------------------------//
 
     //Method to show all prods
-    async getProducts(limit, order) {
+    async getProducts(query,pageOptions) {
         var data = {}
-        console.log({order,limit})
-    
+        console.log(query,pageOptions)
 
-        if (!limit) {
-            switch (order) {
-                case "asc":
-                    data = await prodModel.aggregatePaginate(aggregates.orderAsc)
-                    return data
-
-                case "desc":
-                    data = await prodModel.aggregatePaginate(aggregates.orderDesc)
-                    return data
-
-                default:
-                    data = await prodModel.aggregatePaginate()
-                    // console.log(data)
-                    return data
-
-            }
-        }
-        else {
-            switch (order) {
-                case "asc":
-                    data = await prodModel.aggregatePaginate(aggregates.orderAsc, { limit: limit })
-                    return data
-                case "desc":
-                    data = await prodModel.aggregatePaginate(aggregates.orderDesc, { limit: limit })
-                    return data
-                default:
-                    data = await prodModel.paginate({},{limit:limit})
-                    return data
-            }
-
-        }
+        data = await prodModel.paginate(query,pageOptions)
+        return data
     }
 
     //------------------------------//
@@ -60,7 +31,7 @@ class ProductManager {
     //find index of prod
     findIndex(code) {
         const index = this.fileProds.findIndex(obj => {
-            return obj.cpde === code
+            return obj.code === code
         })
         return index
     }
@@ -156,12 +127,12 @@ class ProductManager {
     // Method to add prod
     async addProduct(prod, user) {
 
-        let totalItems = await prodModel.countDocuments().exec()
-        // console.log(totalItems)
+        let lastItemId = await prodModel.findOne().sort({ $natural: -1 })
+        console.log(lastItemId)
 
 
         const newProduct = {
-            code: totalItems + 1,
+            code: parseInt(lastItemId.code) + 1,
             status: true,
             title: prod.title,
             description: prod.description,
