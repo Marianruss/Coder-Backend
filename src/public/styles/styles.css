@@ -4,7 +4,9 @@ body {
     flex-direction: column;
     margin: 0 auto;
     max-width: 900px;
+    height: max-content;
     background-position: 50%;
+    background-repeat: no-repeat;
 }
 
 .chat-window {
@@ -136,3 +138,27 @@ body {
     color:white
 }
 
+.login-form{
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.login-input{
+    width: 200px;
+    margin-bottom: 10px;
+}
+
+.login-button{
+    width: 200px;
+    margin-bottom: 10px;
+}
+
+.login-failed{
+    color:red
+}
+
+/* .login-button{
+
+} */

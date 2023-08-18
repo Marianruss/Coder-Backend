@@ -6,7 +6,9 @@ const { static } = require("express")
 const loginRouterFn = require("./routers/loginRouter")
 const prodRouterFn = require("./routers/prodRouter")
 const mongoose = require("mongoose")
-// const asd = require
+const cookieParser = require("cookie-parser")
+const session = require("express-session")
+const fileStore = require("session-file-store")
 
 
 
@@ -19,16 +21,17 @@ const httpServer = app.listen(PORT, () => {
 const mongoConnect = "mongodb+srv://marianruss:Darksouls3@cluster0.n9qkduy.mongodb.net/geekers-store?retryWrites=true&w=majority"
 
 mongoose.connect(mongoConnect)
-    .catch( err => {
-        if (err){
+    .catch(err => {
+        if (err) {
             console.log("Can't connect to DB", err)
-        } 
+        }
     }
-)
+    )
 
 
 
 const socket = initSocket(httpServer)
+const fileStorage = fileStore(session)
 
 //Routers
 const prodRouter = prodRouterFn(socket)
@@ -43,6 +46,17 @@ app.engine('handlebars', handlebars.engine())
 app.set('view engine', 'handlebars')
 app.set('views', './views')
 
+//cookies
+app.use(cookieParser("secret"));
+
+//session 
+app.use(session({
+    store: new fileStorage({ path: "./sessions", ttl: 100, retries: 0 }),
+    secret: "secret",
+    resave: true,
+    saveUninitialized: true
+}))
+
 
 //Express encode and public
 app.use(express.json())
@@ -53,9 +67,27 @@ app.use(static('public/'))
 app.use("/products", prodRouter)
 app.use("/carts", cartRouter)
 app.use("/chat", chatRouter)
-app.use("/login",loginRouter)
-app.use("/users",userRouter)
+app.use("/login", loginRouter)
+app.use("/users", userRouter)
 
+
+app.get("/setCookie", (req, res) => {
+    res.signedCookie("testCookie", "Puto el que lee", { maxAge: 1000000 }).send("cookie")
+
+})
+
+app.get("/getCookies", (req, res) => {
+
+    res.send(req.signedCookies)
+})
+
+app.get("/deleteCookies", (req, res) => {
+    res.clearCookie("testCookie").send("cookie removed")
+})
+
+app.get("/",(req,res) =>{
+    res.redirect("/login")
+})
 
 
 module.exports = httpServer

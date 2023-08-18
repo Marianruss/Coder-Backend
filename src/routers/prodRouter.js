@@ -24,7 +24,7 @@ const prodRouterFn = (io) => {
             const category = req.query.category === "juegos" ? "juegos" : req.query.category === "coleccionables" ?  "coleccionables" : null
             var finalProds = []
 
-            console.log(category)   
+            // console.log(category)   
             if (!page) page = 1
             
             if (!limit) limit = 10
@@ -34,7 +34,7 @@ const prodRouterFn = (io) => {
             var pageOptions = {
                 page,
                 limit,
-                order
+                sort:order
             }
 
             query= {
@@ -48,7 +48,7 @@ const prodRouterFn = (io) => {
             console.log(query,pageOptions)
 
 
-            const prods = await admin.getProducts(query, pageOptions, limit, page)
+            const prods = await admin.getProducts(query, pageOptions)
             // console.log(prods)
 
             finalProds = prods.docs.map(item => item.toObject())

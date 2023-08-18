@@ -1,7 +1,11 @@
 <div>
-    <form method="POST" action="/login">
-        <input type="text" placeholder="Nombre..." name="name">
-        <button type="submit" value="Enviar">Iniciar sesión</button>
+    <form method="POST" action="/login" class="login-form">
+        <input type="text" placeholder="Nombre..." name="name" class="login-input">
+        <input type="email" placeholder="Email..."  name="email" class="login-input">
+        <button type="submit" value="Enviar" class="prod-button login-button">Iniciar sesión</button>
+        {{#if loginFailed}}
+            <p class="login-failed">Usuario o mail invalidos. Por favor reintentá</p>
+        {{/if}}
     </form>
 </div>
 

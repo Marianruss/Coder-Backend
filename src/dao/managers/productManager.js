@@ -19,9 +19,9 @@ class ProductManager {
     //Method to show all prods
     async getProducts(query,pageOptions) {
         var data = {}
-        console.log(query,pageOptions)
 
         data = await prodModel.paginate(query,pageOptions)
+        // console.log(data.docs)
         return data
     }
 
