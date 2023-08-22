@@ -35,21 +35,21 @@ prodsFilter.addEventListener("submit", async (e) => {
 
     var url = new URL(window.location.href)
     var params = new URLSearchParams(url)
-    console.log(sort,quant)
-    
-    if (quant != ""){
-        params.set("limit",quant)
+    console.log(sort, quant)
+
+    if (quant != "") {
+        params.set("limit", quant)
     }
 
-    if (sort != ""){
+    if (sort != "") {
         params.set("sort", sort)
     }
-    
-    if (category != ""){
-        params.set("category",category)
+
+    if (category != "") {
+        params.set("category", category)
     }
-    
-    
+
+
     // url = url.toString()
     url.search = params.toString()
     //Convert url to string
@@ -158,5 +158,21 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
     });
+})
+
+const logoutButton = document.getElementById("logout-button")
+
+logoutButton.addEventListener("click", async () => {
+    try { 
+        const response = await fetch("http://localhost:8080/login/logout",{
+            method:"POST",
+            headers: { "Content-Type": "application/json" }
+        })
+        window.location.href = response.url
+        console.log(test)
+    }
+    catch (err) {
+        console.log(err)
+    }
 })
 

@@ -9,6 +9,7 @@ const mongoose = require("mongoose")
 const cookieParser = require("cookie-parser")
 const session = require("express-session")
 const fileStore = require("session-file-store")
+const mongoStore = require("connect-mongo")
 
 
 
@@ -33,6 +34,21 @@ mongoose.connect(mongoConnect)
 const socket = initSocket(httpServer)
 const fileStorage = fileStore(session)
 
+app.use(cookieParser("secret"));
+
+
+//session 
+app.use(session({
+    store:mongoStore.create({
+        mongoUrl:"mongodb+srv://marianruss:Darksouls3@cluster0.n9qkduy.mongodb.net/sessions?retryWrites=true&w=majority",
+        mongoOptions:{useUnifiedTopology:true},
+        ttl:500
+    }),
+    secret: "secret",
+    resave: true,
+    saveUninitialized: true
+}))
+
 //Routers
 const prodRouter = prodRouterFn(socket)
 const cartRouter = require("./routers/cartRouter")
@@ -47,15 +63,6 @@ app.set('view engine', 'handlebars')
 app.set('views', './views')
 
 //cookies
-app.use(cookieParser("secret"));
-
-//session 
-app.use(session({
-    store: new fileStorage({ path: "./sessions", ttl: 100, retries: 0 }),
-    secret: "secret",
-    resave: true,
-    saveUninitialized: true
-}))
 
 
 //Express encode and public
@@ -70,20 +77,6 @@ app.use("/chat", chatRouter)
 app.use("/login", loginRouter)
 app.use("/users", userRouter)
 
-
-app.get("/setCookie", (req, res) => {
-    res.signedCookie("testCookie", "Puto el que lee", { maxAge: 1000000 }).send("cookie")
-
-})
-
-app.get("/getCookies", (req, res) => {
-
-    res.send(req.signedCookies)
-})
-
-app.get("/deleteCookies", (req, res) => {
-    res.clearCookie("testCookie").send("cookie removed")
-})
 
 app.get("/",(req,res) =>{
     res.redirect("/login")

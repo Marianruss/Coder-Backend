@@ -1,0 +1,46 @@
+<div class="admin-dashboard">
+
+    {{!-- Form to delete product --}}
+        <form class="delete-prod" id="delete-form">
+            <p>Delete product</p>
+            <input type="number" placeholder="Product ID" id="prod-id">
+            <button type="button" class="delete-button" id="delete-prod-button">Borrar</button>
+        </form>
+    
+    {{!-- Form to add product --}}
+    <form class="addprod-form">
+        <p class="addprod-text">Add product</p>
+        <input placeholder="title" type="text">
+        <input placeholder="price" type="number">
+
+        <select placeholder="new">
+            <option value="" disabled selected hidden>Is new</option>
+            <option value="true">true</option>
+            <option value="false">false</option>
+        </select>
+
+        <input placeholder="description" type="text">
+
+        <select placeholder="category">
+            <option disabled selected hidden>Category</option>
+            <option value="juegos">Juegos</option>
+            <option value="coleccionables">Coleccionables</option>
+        </select>
+        <select placeholder="Offer">
+            <option value="" disabled selected hidden>Is in offer</option>
+            <option value="true">true</option>
+            <option value="false">false</option>
+        </select>
+        <select placeholder="category">
+            <option disabled selected hidden>Subcategory</option>
+            <option value="pc">PC</option>
+            <option value="xbox">Xbox</option>
+            <option value="playstation">Playstation</option>
+        </select>
+        <input placeholder="thumbnails">
+        <button type="submit" id="add-prod-button">Agregar producto</button>
+    </form>
+</div>
+
+<script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+<script src="/js/scripts/adminScripts.js"></script>

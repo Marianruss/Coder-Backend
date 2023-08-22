@@ -1,5 +1,14 @@
 <div>
-    <h2 class="title">{{{title}}}</h2>
+    <div class="title-logout">
+        <h2 class="title">{{{title}}}</h2>
+        <div class="header-buttons">
+            <button class="header-button" id="logout-button">Logout</button>
+            {{#if isAdmin}}
+            <a href="/login/adminPanel"><button class="header-button" id="admin-button">Admin panel</button></a>
+            {{/if}}
+        </div>
+    </div>
+
     <div>
         <form class="filter-form" id="filter">
             <select name="sort" id="sort-select" class="filter-opt">
@@ -17,7 +26,7 @@
                 <option value="" disabled selected hidden>Filter by category</option>
                 <option value="juegos">Juegos</option>
                 <option value="coleccionables">Coleccionables</option>
-                
+
             </select>
 
             <button class="filter-button" type="submit">Filter</button>
@@ -25,12 +34,15 @@
         </form>
         <div class="products-grid">
             {{#each prods}}
-            <div class="prod-container"  id="prod">
+            <div class="prod-container" id="prod">
+
                 <a href="https://www.facebook.com"><img src="https://placehold.co/250x300"></a>
                 <p>{{this.title}}</p>
                 <p>${{this.price}}</p>
                 <p>code: {{this.code}}</p>
-                <button id="delete" class="prod-button" data-id={{this.code}}>Borrar</button>
+
+
+
                 <form class="cart-form" id="cart-form" data-id={{this.code}}>
                     <p>cart ID</p>
                     <input type="text" name="cart" id="cart-id" class="cart-id" placeholder="ID">
@@ -52,6 +64,6 @@
 </div>
 
 
-
+<script src="/js/scripts/productsScript.js" type="module"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/productsSocket.js"></script>

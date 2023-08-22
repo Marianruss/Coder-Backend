@@ -14,6 +14,7 @@ const { collectibles } = require("../utils/agregates/agregates")
 const prodRouterFn = (io) => {
 
     prodRouter.get("/", async (req, res) => {
+        
 
         try {
             var limit = parseInt(req.query.limit)
@@ -21,12 +22,13 @@ const prodRouterFn = (io) => {
             const pages = []
             var query
             var page = req.query.page
-            const category = req.query.category === "juegos" ? "juegos" : req.query.category === "coleccionables" ?  "coleccionables" : null
+            const category = req.query.category === "juegos" ? "juegos" : req.query.category === "coleccionables" ? "coleccionables" : null
             var finalProds = []
+            var isAdmin = req.query.isAdmin === "true" ? true : false
 
-            // console.log(category)   
+
             if (!page) page = 1
-            
+
             if (!limit) limit = 10
 
             const order = sort === "asc" ? { price: 1 } : sort === "desc" ? { price: -1 } : {}
@@ -34,18 +36,18 @@ const prodRouterFn = (io) => {
             var pageOptions = {
                 page,
                 limit,
-                sort:order
+                sort: order
             }
 
-            query= {
+            query = {
                 category
             }
 
             if (!category) query = {}
 
-            
 
-            console.log(query,pageOptions)
+
+            // console.log(query, pageOptions)
 
 
             const prods = await admin.getProducts(query, pageOptions)
@@ -59,8 +61,6 @@ const prodRouterFn = (io) => {
                 pages.push(i)
             }
 
-
-
             params = {
                 title: "Productos",
                 prods: finalProds,
@@ -68,9 +68,12 @@ const prodRouterFn = (io) => {
                 isActualPage: true,
                 hasPrevPage: prods.hasPrevPage,
                 hasNextPage: prods.hasNextPage,
-                pagingCounter: prods.pagingCounter
+                pagingCounter: prods.pagingCounter,
+                isAdmin
             }
-            // console.log(params)
+
+            
+                console.log(typeof(params.isAdmin))
 
 
 
@@ -144,16 +147,15 @@ const prodRouterFn = (io) => {
         try {
             const code = parseInt(req.params.code)
             const prod = await admin.deleteProd(code)
-            io.emit("delProd", prod.code)
-
-
-            return prod.deletedCount === 1
-                ? res.status(200).json({
-                    msg: "Producto eliminado"
-                })
-                : res.status(400).json({
-                    error: "No existe el producto"
-                })
+            // io.emit("delProd", prod.code)
+            switch (prod.deletedCount === 1) {
+                case true:
+                    res.statusMessage = "Producto eliminado"
+                    return res.status(200).end()
+                case false:
+                    res.statusMessage = "No existe el product"
+                    return res.status(404).end()
+            }
         }
 
         catch (err) {

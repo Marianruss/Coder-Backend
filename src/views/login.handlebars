@@ -1,14 +1,20 @@
-<div>
+<div class="login-options">
     <form method="POST" action="/login" class="login-form">
-        <input type="text" placeholder="Nombre..." name="name" class="login-input">
-        <input type="email" placeholder="Email..."  name="email" class="login-input">
-        <button type="submit" value="Enviar" class="prod-button login-button">Iniciar sesión</button>
+        <input type="email" placeholder="Email..." name="email" class="login-input">
+        <input type="text" placeholder="Contraseña..." name="password" class="login-input">
+        <div class="login-button-div">
+            <button type="submit" value="Enviar" class="prod-button login-button">Login</button>
+        </div>
         {{#if loginFailed}}
-            <p class="login-failed">Usuario o mail invalidos. Por favor reintentá</p>
+        <p class="login-failed">Usuario o mail invalidos. Por favor reintentá</p>
         {{/if}}
     </form>
+
+    <p class="register-text">¿No sos usuario? Registrate</p>
+    <button type="button" class="prod-button login-button" id="register-button">Register</button>
+
 </div>
 
-
-<script src="/socket.io/socket.io.js"></script>
-<script src="/js/chatSocket.js"></script>
+<script src="/js/scripts/registerScript.js"></script>
+{{!-- <script src="/socket.io/socket.io.js"></script>
+<script src="/js/chatSocket.js"></script> --}}
