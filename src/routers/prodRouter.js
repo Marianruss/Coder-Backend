@@ -15,7 +15,9 @@ const prodRouterFn = (io) => {
 
     prodRouter.get("/", async (req, res) => {
         
-
+        if (req.session.logged === false || !req.session.user){
+            return res.redirect("/login")
+        }
         try {
             var limit = parseInt(req.query.limit)
             const sort = req.query.sort
@@ -24,7 +26,11 @@ const prodRouterFn = (io) => {
             var page = req.query.page
             const category = req.query.category === "juegos" ? "juegos" : req.query.category === "coleccionables" ? "coleccionables" : null
             var finalProds = []
-            var isAdmin = req.query.isAdmin === "true" ? true : false
+            if (req.session.user){
+                var isAdmin = req.session.user.isAdmin
+            var username = req.session.user.name
+            }
+            
 
 
             if (!page) page = 1
@@ -69,7 +75,8 @@ const prodRouterFn = (io) => {
                 hasPrevPage: prods.hasPrevPage,
                 hasNextPage: prods.hasNextPage,
                 pagingCounter: prods.pagingCounter,
-                isAdmin
+                isAdmin,
+                username                
             }
 
             
@@ -118,13 +125,22 @@ const prodRouterFn = (io) => {
 
         try {
             const prod = req.body
-            io.emit("newProduct", prod)
+            console.log(prod)
 
             const add = await admin.addProduct(prod, admin)
-
-            // if (add != "success"){
-            //     throw new Error(add)
-            // }
+            
+            switch (add) {
+                case "added":
+                    res.statusMessage = "Item agregado a la DB"     
+                    return res.status(200).json({
+                        msg: "Item agregado a la DB"
+                    })       
+                default:
+                    res.statusMessage = "No se pudo agregar el producto"
+                    return res.status(400).json({
+                        msg: "No se pudo agregar el producto"
+                    })
+            }
 
             res.status(200).json({
                 message: "product added sucessfully"
@@ -151,10 +167,14 @@ const prodRouterFn = (io) => {
             switch (prod.deletedCount === 1) {
                 case true:
                     res.statusMessage = "Producto eliminado"
-                    return res.status(200).end()
+                    return res.status(200).json({
+                        msg: "Producto eliminado"
+                    })
                 case false:
                     res.statusMessage = "No existe el product"
-                    return res.status(404).end()
+                    return res.status(404).json({
+                        msg: "No existe el producto"
+                    })
             }
         }
 

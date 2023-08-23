@@ -1,8 +1,9 @@
-<div>
-    <form class="registration-form">
+<div class="register">
+    <form class="registration-form" method="post" action="/login/register" >
         <h2 class="register-title">Formulario de registro</h2>
-        <input class="register-input" placeholder="Nombre..." type="text">
-        <input class="register-input" placeholder="Email..." type="email">
-        <input class="register-input" placeholder="Contraseña..." type="password">
+        <input class="register-input" placeholder="Nombre..." type="text" name="name">
+        <input class="register-input" placeholder="Email..." type="email" name="email">
+        <input class="register-input" placeholder="Contraseña..." type="password" name="password">
+        <button class="register-button">Registrarse</button>
     </form>
 </div>

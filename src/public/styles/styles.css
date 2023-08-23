@@ -1,3 +1,13 @@
+@font-face {
+    font-family: "GoldenAge";
+    src: url(../fonts/Gameplay.ttf);
+}
+
+@font-face {
+    font-family: "Number";
+    src: url(../fonts/numberfont.ttf);
+}
+
 body {
     background-image: linear-gradient(#0b0610, #123b6a, #0b0610);
     display: flex;
@@ -8,6 +18,32 @@ body {
     /* align-items: center; */
     /* background-position: 50%; */
     background-size: contain;
+}
+
+.header{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-self: center;
+    /* border-bottom: white; */
+    border-bottom: 3px solid grey;
+    border-width: 3px;
+    width: 100%;
+}
+
+.main-title{
+    font-family: GoldenAge;
+    align-self: center;
+    margin-top: 100px;
+    color: #fcc243;
+    font-size: 100px;
+}
+
+.main-title:hover{
+    color: gray;
+    font-size: 103px;
+    transition-duration: 0.2s;
+
 }
 
 .chat-window {
@@ -172,7 +208,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 300px;
+    margin-top: 100px;
     align-self: center;
     width: 400px;
     height: 500px;
@@ -208,6 +244,7 @@ body {
     flex-direction: row;
     align-items: center;
     margin-top: 50px;
+    margin-bottom: 100px;
     column-gap: 20px;
     justify-content: space-between;
 }
@@ -267,12 +304,12 @@ body {
     border-radius: 5px;
 }
 
-.delete-prod p{
+.delete-prod p {
     color: white;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
-.delete-prod input{
+.delete-prod input {
     width: 100px;
 }
 
@@ -288,7 +325,7 @@ body {
         0 16px 16px rgba(128, 128, 128, 0.075);
 }
 
-.addprod-form p{
+.addprod-form p {
     color: white;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
@@ -299,7 +336,7 @@ body {
     margin-left: 15px;
 }
 
-.addprod-form button{
+.addprod-form button {
     background-color: #fcc243;
     border-radius: 7px;
     width: 100%;
@@ -316,4 +353,37 @@ body {
     grid-area: 1 / 1 / 2 / 3;
     color: white;
     font-size: 30px;
+}
+
+.register-button {
+    width: 200px;
+    border-radius: 6px;
+    background-color: #fcc243;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.header a{
+    text-decoration: none;
+}
+
+.greetings {
+    color: #fcc243;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 15px;
+    align-self: center;
+    margin-top: 10px;
+}
+
+.register{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 80px;
+}
+
+.register-button:hover{
+    background-color: gray;
+    transition-property: all;
+    transition-duration: 0.2s;
+    transition-timing-function: linear;
 }

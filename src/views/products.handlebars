@@ -2,6 +2,7 @@
     <div class="title-logout">
         <h2 class="title">{{{title}}}</h2>
         <div class="header-buttons">
+            <p class="greetings">Bienvenido {{username}}</p>
             <button class="header-button" id="logout-button">Logout</button>
             {{#if isAdmin}}
             <a href="/login/adminPanel"><button class="header-button" id="admin-button">Admin panel</button></a>

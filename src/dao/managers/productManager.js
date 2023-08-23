@@ -17,10 +17,10 @@ class ProductManager {
     //------------------------------//
 
     //Method to show all prods
-    async getProducts(query,pageOptions) {
+    async getProducts(query, pageOptions) {
         var data = {}
 
-        data = await prodModel.paginate(query,pageOptions)
+        data = await prodModel.paginate(query, pageOptions)
         // console.log(data.docs)
         return data
     }
@@ -128,18 +128,14 @@ class ProductManager {
     async addProduct(prod, user) {
 
         let lastItemId = await prodModel.findOne().sort({ $natural: -1 })
-        console.log(lastItemId)
+        // console.log(lastItemId)
 
 
         const newProduct = {
             code: parseInt(lastItemId.code) + 1,
-            status: true,
-            title: prod.title,
-            description: prod.description,
-            price: prod.price,
-            thumbnails: prod.thumbnails,
-            stock: prod.stock
+            ...prod
         }
+        console.log(newProduct)
 
         // check if exists any product with the same id
         if (await prodModel.find({ id: newProduct.id }).length > 0) {
@@ -147,7 +143,14 @@ class ProductManager {
             return
         }
 
-        prodModel.create(newProduct)
+        try {
+            await prodModel.create(newProduct)
+            return "added"
+        }
+        catch (err){
+            return `${err}`
+        }
+
 
     }
     catch(err) {

@@ -45,7 +45,7 @@ app.use(session({
         ttl:500
     }),
     secret: "secret",
-    resave: true,
+    resave: false,
     saveUninitialized: true
 }))
 

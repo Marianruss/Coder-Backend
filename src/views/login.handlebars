@@ -8,6 +8,12 @@
         {{#if loginFailed}}
         <p class="login-failed">Usuario o mail invalidos. Por favor reintentá</p>
         {{/if}}
+        {{#if noEmail}}
+        <p class="login-failed">Debes registrarte para ingresar</p>
+        {{/if}}
+        {{#if alreadyLogged}}
+        <p class="login-failed">El usuario ya está logeado</p>
+        {{/if}}
     </form>
 
     <p class="register-text">¿No sos usuario? Registrate</p>

@@ -9,64 +9,91 @@ const loginRouterFn = (io) => {
 
     const loginRouter = new Router
 
+    
 
     loginRouter.get("/", (req, res) => {
+        if(req.session.logged === true){
+            return res.redirect("/products")
+        }
         return res.render("login")
     })
 
+    
+
     loginRouter.post("/", (req, res) => {
-        var loginFailed = false
         const email = req.body.email
         const password = req.body.password
 
-        const isAdmin = (email === "adminCoder@coder.com" && password === "adminCod3r123") ? true : false
-
-        console.log({isAdmin })
-
-        //if no name or email in session assigns body params to it
-        if (!req.session.email) {
-            req.session.email = email
-
-            if (!req.session.password) {
-                req.session.password = password
-
-            }
-        }
-
-        const user = {
-            isAdmin,
-            email,
-            password
-        }
-
-
-        //if name is incorrect recalls login with loginFailed true
-        if (email != req.session.email) {
-            loginFailed = true
+        if (req.session.logged === true){
             const params = {
-                loginFailed: loginFailed
+                alreadyLogged:true
             }
             return res.render("login", params)
         }
-        return res.cookie("user",  user, {}).redirect(`/products?isAdmin=${isAdmin}`)
+
+        var loginFailed = false
+        const user = req.session.user
+
+        if (!user) {
+            const params = {
+                noEmail: true
+            }
+            return res.render("login", params)
+        }
+        console.log(email)
+        console.log(user.email)
+
+        //if name is incorrect recalls login with loginFailed true
+        if (email != undefined && user.email != undefined) {
+            if (email != user.email || password != user.password) {
+                loginFailed = true
+                const params = {
+                    loginFailed: loginFailed
+                }
+                return res.render("login", params)
+            }
+
+        }
+        req.session.logged = true
+        return res.redirect("/products")
     })
 
-    loginRouter.get("/checkCredentials", (req, res) => {
 
 
-    })
+    //Registro de usuarios
 
+
+    //Register view render
     loginRouter.get("/register", (req, res) => {
         return res.render("register")
     })
 
+
+    //register logic
+    loginRouter.post("/register", (req, res) => {
+        const user = req.body
+
+        const isAdmin = (user.email === "adminCoder@coder.com" && user.password === "adminCod3r123") ? true : false
+
+        req.session.user = {
+            ...user,
+            isAdmin
+        }
+
+        res.cookie("user", JSON.stringify(user), {}).redirect(`/login`)
+
+    })
+
+    
+    //on logout button click we set logged to false so the session can relogin
     loginRouter.post("/logout", (req, res) => {
-        req.session.destroy()
+        req.session.logged = false
         return res.redirect("/login")
     })
 
-    loginRouter.get("/adminPanel", (req,res) =>{
 
+    //admin panel render
+    loginRouter.get("/adminPanel", (req, res) => {
         return res.render("adminPanel")
     })
 
