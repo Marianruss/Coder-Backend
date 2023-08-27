@@ -3,36 +3,57 @@ const initSocket = require("../utils/socket")
 const httpServer = require("../httpServer")
 const { param } = require('./prodRouter')
 const { log } = require('handlebars')
-
+const { createHash, isValidPassword } = require("../utils/passwordHash")
+const userModel = require("../dao/models/user.model")
+const initializePassport = require('../config/passport.config')
+const passport = require("passport")
 
 const loginRouterFn = (io) => {
 
     const loginRouter = new Router
 
-    
 
-    loginRouter.get("/", (req, res) => {
-        if(req.session.logged === true){
+
+    loginRouter.get("/", async (req, res) => {
+        const user = await userModel.findOne({ _id: req.session.sessionId })
+
+        // console.log(user)
+
+        if (!user) {
+            return res.render("login")
+        }
+
+        if (user.logged) {
             return res.redirect("/products")
         }
-        return res.render("login")
+
     })
 
-    
 
-    loginRouter.post("/", (req, res) => {
-        const email = req.body.email
+
+    loginRouter.post("/", async (req, res) => {
+
+        const user = await userModel.findOne({ email: req.body.email })
         const password = req.body.password
+        const sessionId = req.session.sessionId
 
-        if (req.session.logged === true){
+        console.log(req.body.password)
+
+        if (user.logged && user._id != req.session.sessionId) {
+
             const params = {
-                alreadyLogged:true
+                alreadyLogged: true
             }
+            console.log("session diferente y usuario logeado")
             return res.render("login", params)
+        }
+        else if (user.logged === true) {
+            console.log("aca debería ir a products")
+            return res.redirect("products")
         }
 
         var loginFailed = false
-        const user = req.session.user
+        // const user = req.session.user
 
         if (!user) {
             const params = {
@@ -40,12 +61,10 @@ const loginRouterFn = (io) => {
             }
             return res.render("login", params)
         }
-        console.log(email)
-        console.log(user.email)
 
         //if name is incorrect recalls login with loginFailed true
-        if (email != undefined && user.email != undefined) {
-            if (email != user.email || password != user.password) {
+        if (req.body.email != undefined && user.email != undefined) {
+            if (req.body.email != user.email || !isValidPassword(req.body.password, user.password)) {
                 loginFailed = true
                 const params = {
                     loginFailed: loginFailed
@@ -54,14 +73,14 @@ const loginRouterFn = (io) => {
             }
 
         }
-        req.session.logged = true
+
+        req.session.sessionId = user._id
+        user.logged = true
+        user.save()
         return res.redirect("/products")
     })
 
-
-
-    //Registro de usuarios
-
+    // loginRouter.get("/")
 
     //Register view render
     loginRouter.get("/register", (req, res) => {
@@ -70,32 +89,86 @@ const loginRouterFn = (io) => {
 
 
     //register logic
-    loginRouter.post("/register", (req, res) => {
-        const user = req.body
+    loginRouter.post("/register", passport.authenticate("register", { failureRedirect: "/login/failureRegister" }),
+        async (req, res) => {
 
-        const isAdmin = (user.email === "adminCoder@coder.com" && user.password === "adminCod3r123") ? true : false
+            return res.status(201).redirect(`/login`)
 
-        req.session.user = {
-            ...user,
-            isAdmin
-        }
 
-        res.cookie("user", JSON.stringify(user), {}).redirect(`/login`)
+        })
 
+    loginRouter.get("/failureRegister", (req, res) => {
+        return res.json({
+            error: "Error al registrarse"
+        })
     })
 
-    
+
     //on logout button click we set logged to false so the session can relogin
-    loginRouter.post("/logout", (req, res) => {
-        req.session.logged = false
-        return res.redirect("/login")
+    loginRouter.post("/logout", async (req, res) => {
+        const user = await userModel.findOne({ _id: req.session.sessionId })
+
+        user.logged = false
+        user.save()
+        req.session.destroy()
+        return await res.redirect("/login")
     })
 
+    loginRouter.get("/loginMiddleware", async (req, res) => {
+        const user = await userModel.findOne({ _id: req.session.sessionId })
+
+        if (!user) {
+            return res.redirect("/login")
+        }
+        else if (user.logged) {
+            return res.redirect("/products")
+        }
+    })
 
     //admin panel render
     loginRouter.get("/adminPanel", (req, res) => {
         return res.render("adminPanel")
     })
+
+    //change password render
+    loginRouter.get("/changePassword", async (req, res) => {
+        return res.render("changepassword")
+    })
+
+    //change password 
+    loginRouter.post("/changePassword", async (req, res) => {
+        const email = req.body.email
+        const actualPassword = req.body.actualPassword
+        var newPassword = req.body.newPassword
+        const newPasswordRepeat = req.body.newPasswordRepeat
+
+        const user = await userModel.findOne({ email: email })
+
+        if (!user) {
+            res.statusMessage = "No existe el usuario"
+            return res.status(404).end()
+        }
+
+        else if (!isValidPassword(actualPassword, user.password)) {
+            res.statusMessage = "Contraseña actual incorrecta"
+            return res.status(401).end()
+        }
+
+        else if (newPassword != newPasswordRepeat) {
+            res.statusMessage = "Las contraseñas no coinciden"
+            return res.status(401).end()
+        }
+
+
+        newPassword = createHash(newPassword)
+        user.password = newPassword
+        await user.save()
+        return res.status(200).json({
+            msg: "contraseña cambiada con exito"
+        })
+    })
+
+
 
     return loginRouter
 

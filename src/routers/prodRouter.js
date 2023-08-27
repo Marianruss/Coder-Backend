@@ -8,16 +8,21 @@ const prodRouter = Router()
 const prodModel = require("../dao/models/product.model")
 const { isArray } = require("util")
 const { collectibles } = require("../utils/agregates/agregates")
+const userModel = require("../dao/models/user.model")
 
 
 //traer todos los products, se puede poner un limit
 const prodRouterFn = (io) => {
 
     prodRouter.get("/", async (req, res) => {
+        const user = await userModel.findOne({_id : req.session.sessionId})
+        // console.log(user)
+
+
         
-        if (req.session.logged === false || !req.session.user){
-            return res.redirect("/login")
-        }
+        // if (!user || user.logged === false){
+        //     return res.redirect("/login")
+        // }
         try {
             var limit = parseInt(req.query.limit)
             const sort = req.query.sort
@@ -26,10 +31,7 @@ const prodRouterFn = (io) => {
             var page = req.query.page
             const category = req.query.category === "juegos" ? "juegos" : req.query.category === "coleccionables" ? "coleccionables" : null
             var finalProds = []
-            if (req.session.user){
-                var isAdmin = req.session.user.isAdmin
-            var username = req.session.user.name
-            }
+            
             
 
 
@@ -75,12 +77,11 @@ const prodRouterFn = (io) => {
                 hasPrevPage: prods.hasPrevPage,
                 hasNextPage: prods.hasNextPage,
                 pagingCounter: prods.pagingCounter,
-                isAdmin,
-                username                
+                isAdmin: user.isAdmin,
+                username: user.name                
             }
 
             
-                console.log(typeof(params.isAdmin))
 
 
 

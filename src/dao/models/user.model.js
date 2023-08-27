@@ -1,10 +1,13 @@
 const mongoose = require("mongoose")
 
 const userSchema = mongoose.Schema({
-    first_name: String,
-    last_name: String,
+    name: String,
+    lastname: String,
     email: String,
-    gender: String
+    gender: String,
+    password: String,
+    isAdmin: Boolean,
+    logged: Boolean
 })
 
 const userModel = mongoose.model('users',userSchema)

@@ -1,7 +1,7 @@
 <div class="login-options">
     <form method="POST" action="/login" class="login-form">
-        <input type="email" placeholder="Email..." name="email" class="login-input">
-        <input type="text" placeholder="Contraseña..." name="password" class="login-input">
+        <input type="email" placeholder="Email..." name="email" class="login-input" required>
+        <input type="text" placeholder="Contraseña..." name="password" class="login-input" required>
         <div class="login-button-div">
             <button type="submit" value="Enviar" class="prod-button login-button">Login</button>
         </div>
@@ -17,7 +17,9 @@
     </form>
 
     <p class="register-text">¿No sos usuario? Registrate</p>
-    <button type="button" class="prod-button login-button" id="register-button">Register</button>
+    <button type="button" class="prod-button login-button" id="register-button">Registrate</button>
+
+    <a href="http://localhost:8080/login/changePassword">Olvidé mi contraseña</a>
 
 </div>
 

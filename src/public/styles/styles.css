@@ -387,3 +387,36 @@ body {
     transition-duration: 0.2s;
     transition-timing-function: linear;
 }
+
+.changepassword-form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 40px;
+    
+}
+
+.changepassword-input{
+    width: 200px;
+    margin-bottom: 20px;
+}
+
+.changepassword-button{
+    width: 200px;
+    border-radius: 6px;
+    background-color: #fcc243;
+    margin-top: 40px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.changepassword-button:hover{
+    background-color: gray;
+    transition-property: all;
+    transition-duration: 0.2s;
+    transition-timing-function: linear;
+}
+
+.changepassword-text{
+    color: white;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}

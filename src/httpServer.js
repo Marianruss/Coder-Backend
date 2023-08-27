@@ -10,6 +10,8 @@ const cookieParser = require("cookie-parser")
 const session = require("express-session")
 const fileStore = require("session-file-store")
 const mongoStore = require("connect-mongo")
+const initializePassport = require("./config/passport.config")
+const passport = require("passport")
 
 
 
@@ -48,6 +50,10 @@ app.use(session({
     resave: false,
     saveUninitialized: true
 }))
+
+initializePassport()
+app.use(passport.initialize())
+app.use(passport.session())
 
 //Routers
 const prodRouter = prodRouterFn(socket)
