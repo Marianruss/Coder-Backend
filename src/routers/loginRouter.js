@@ -82,6 +82,14 @@ const loginRouterFn = (io) => {
 
     // loginRouter.get("/")
 
+    loginRouter.get("/github",passport.authenticate("github", {scope:["user:email"]}),async(req,res) =>{})
+
+    loginRouter.get("/githubcallback",passport.authenticate("github",{failureRedirect:"/login", successRedirect:"/products"}),async(req,res) =>{
+        req.session.user = req.user
+        
+        // res.redirect("/")
+    })
+
     //Register view render
     loginRouter.get("/register", (req, res) => {
         return res.render("register")
@@ -91,7 +99,7 @@ const loginRouterFn = (io) => {
     //register logic
     loginRouter.post("/register", passport.authenticate("register", { failureRedirect: "/login/failureRegister" }),
         async (req, res) => {
-
+            
             return res.status(201).redirect(`/login`)
 
 
@@ -106,7 +114,8 @@ const loginRouterFn = (io) => {
 
     //on logout button click we set logged to false so the session can relogin
     loginRouter.post("/logout", async (req, res) => {
-        const user = await userModel.findOne({ _id: req.session.sessionId })
+        const user = await userModel.findOne({ _id: req.session.passport.user })
+        console.log(req.session)
 
         user.logged = false
         user.save()

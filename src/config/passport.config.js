@@ -1,5 +1,6 @@
 const passport = require("passport")
 const passportLocal = require("passport-local")
+const githubStrategy = require("passport-github2")
 const userModel = require("../dao/models/user.model")
 const { createHash, isValidPassword } = require("../utils/passwordHash")
 
@@ -7,13 +8,57 @@ const localStrategy = passportLocal.Strategy
 
 const initializePassport = () => {
 
+    passport.use("github", new githubStrategy({
+        clientID: "Iv1.252c59937eaff6ae",
+        clientSecret: "e4c969df7828cd0cc5ff6b8c8a98866c90264e28",
+        callbackURL: "http://localhost:8080/login/githubcallback"
+    }, async (accessToken, refreshToken, profile, done) => {
+        try {
+            // console.log(profile._json.login)
+            let user = await userModel.findOne({ name: profile._json.login })
+            console.log(profile._json)
+            console.log("Se mostró usuario")
+
+            if (!user) {
+                console.log("no existe el usuario de git")
+                const newUser = await userModel.create({
+                    name: profile._json.login,
+                    lastname: "",
+                    email: profile._json.email,
+                    gender: "M",
+                    password: "",
+                    isAdmin: true,
+                    logged: false
+                })
+
+
+                return done(null, newUser)
+            }
+
+
+            // req.session.sessionId = user._id
+            console.log("Ya existe el usuario de git")
+            // user = user.toObject()
+            user.logged = true
+            await user.save()
+            return done(null, user)
+
+
+
+
+        }
+        catch (error) {
+            return done(error)
+        }
+    }))
+
     passport.use("register", new localStrategy(
         { passReqToCallback: true, usernameField: "email" },
         async (req, username, password, done) => {
             try {
                 var user = await userModel.findOne({ email: username })
 
-                console.log({ username })
+                // console.log({ username })
 
                 if (user) {
                     console.log("Ya existe el usuario")
@@ -21,21 +66,21 @@ const initializePassport = () => {
                 }
 
 
-                var newUser = req.body
-                newUser.password = createHash(newUser.password)
+                var body = req.body
+                body.password = createHash(body.password)
                 const isAdmin = ((newUser.email === "adminCoder@coder.com" && newUser.password === "adminCod3r123") || (newUser.email === "marianruss12@gmail.com")) ? true : false
 
 
 
-                newUser = {
-                    ...newUser,
+                const newUser = {
+                    ...body,
                     isAdmin,
                     logged: false
                 }
 
 
-                newUser = await userModel.create(newUser)
-                return done(null, newUser)
+                const create = await userModel.create(newUser)
+                return done(null, create)
             }
 
             catch (err) {
@@ -46,6 +91,7 @@ const initializePassport = () => {
 
     passport.serializeUser((user, done) => {
         console.log("serialize")
+        // console.log(user)
         done(null, user._id)
     })
 

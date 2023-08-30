@@ -15,14 +15,15 @@ const userModel = require("../dao/models/user.model")
 const prodRouterFn = (io) => {
 
     prodRouter.get("/", async (req, res) => {
-        const user = await userModel.findOne({_id : req.session.sessionId})
-        // console.log(user)
+        console.log(req.session)
+        const user = await userModel.findOne({_id : req.session.passport.user})
+        console.log(user)
 
 
         
-        // if (!user || user.logged === false){
-        //     return res.redirect("/login")
-        // }
+        if (!user || user.logged === false){
+            return res.redirect("/login")
+        }
         try {
             var limit = parseInt(req.query.limit)
             const sort = req.query.sort
@@ -31,6 +32,11 @@ const prodRouterFn = (io) => {
             var page = req.query.page
             const category = req.query.category === "juegos" ? "juegos" : req.query.category === "coleccionables" ? "coleccionables" : null
             var finalProds = []
+
+            const user = await userModel.findOne({_id:req.session.passport.user})
+            console.log(req.session.passport.user)
+            console.log(user)
+            console.log("muestro session")
             
             
 

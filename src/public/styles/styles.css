@@ -420,3 +420,20 @@ body {
     color: white;
     font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
+
+
+.login-github{
+    background-color: #1c1c24;
+    width: 170px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 6px;
+}
+
+.github-link{
+    text-decoration: none;
+    margin-left: 5px;
+    color:white
+}
