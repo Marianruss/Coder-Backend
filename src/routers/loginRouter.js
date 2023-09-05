@@ -30,31 +30,17 @@ const loginRouterFn = (io) => {
     })
 
 
+    ///--- Login Middleware ---///
 
-    loginRouter.post("/", async (req, res) => {
+    const loginMiddleware = async (req, res) => {
 
         const user = await userModel.findOne({ email: req.body.email })
         const password = req.body.password
         const sessionId = req.session.sessionId
 
-        console.log(req.body.password)
+        // console.log(req.body.password)
 
-        if (user.logged && user._id != req.session.sessionId) {
-
-            const params = {
-                alreadyLogged: true
-            }
-            console.log("session diferente y usuario logeado")
-            return res.render("login", params)
-        }
-        else if (user.logged === true) {
-            console.log("aca debería ir a products")
-            return res.redirect("products")
-        }
-
-        var loginFailed = false
-        // const user = req.session.user
-
+        //No existe usuario
         if (!user) {
             const params = {
                 noEmail: true
@@ -62,44 +48,73 @@ const loginRouterFn = (io) => {
             return res.render("login", params)
         }
 
-        //if name is incorrect recalls login with loginFailed true
-        if (req.body.email != undefined && user.email != undefined) {
-            if (req.body.email != user.email || !isValidPassword(req.body.password, user.password)) {
-                loginFailed = true
-                const params = {
-                    loginFailed: loginFailed
-                }
-                return res.render("login", params)
-            }
+        //Usuario ya logeado desde otra session
+        else if (user.logged && user._id != req.session.sessionId) {
 
+            const params = {
+                alreadyLogged: true
+            }
+            console.log("session diferente y usuario logeado")
+            return res.render("login", params)
         }
 
+        //Usuario ya logeado en la misma session
+        else if (user.logged === true) {
+            console.log("aca debería ir a products")
+            return res.redirect("products")
+        }
+
+        //Contraseña incorrecta
+        else if (!isValidPassword(req.body.password, user.password)) {
+            const params = {
+                incorrectPassword: true
+            }
+            return res.render("login", params)
+        }
+
+        //Guardamos los datos del usuario.
         req.session.sessionId = user._id
         user.logged = true
         user.save()
         return res.redirect("/products")
-    })
+    }
 
-    // loginRouter.get("/")
 
-    loginRouter.get("/github",passport.authenticate("github", {scope:["user:email"]}),async(req,res) =>{})
+    ///--- Login post ---///
 
-    loginRouter.get("/githubcallback",passport.authenticate("github",{failureRedirect:"/login", successRedirect:"/products"}),async(req,res) =>{
+    loginRouter.post("/", loginMiddleware, passport.authenticate("login", { failureRedirect: "/login" }, async (req, res) => {
+    }))
+
+
+
+
+    ///--- Github login passport strat ---///
+    loginRouter.get("/github", passport.authenticate("github", { scope: ["user:email"] }), async (req, res) => { console.log("sad") })
+
+    loginRouter.get("/githubcallback", passport.authenticate("github", { failureRedirect: "/login/register" }), async (req, res) => {
         req.session.user = req.user
-        
-        // res.redirect("/")
+        return res.redirect("/products")
     })
 
     //Register view render
     loginRouter.get("/register", (req, res) => {
-        return res.render("register")
+        console.log(req.session)
+        if (req.session.sessionId != undefined) {
+            return res.redirect("/")
+        }
+        else {
+            return res.render("register")
+        }
+
     })
 
+    ///--- Local login passport strat ---///
+    loginRouter.get("/", passport.authenticate("login", { failureRedirect: "/login" }, async (req, res) => { }))
 
     //register logic
     loginRouter.post("/register", passport.authenticate("register", { failureRedirect: "/login/failureRegister" }),
         async (req, res) => {
-            
+
             return res.status(201).redirect(`/login`)
 
 
@@ -112,9 +127,13 @@ const loginRouterFn = (io) => {
     })
 
 
-    //on logout button click we set logged to false so the session can relogin
+
+
+
+
+    ///--- on logout button click we set logged to false so the session can relogin ---///
     loginRouter.post("/logout", async (req, res) => {
-        const user = await userModel.findOne({ _id: req.session.passport.user })
+        const user = await userModel.findOne({ _id: req.session.sessionId })
         console.log(req.session)
 
         user.logged = false
@@ -123,32 +142,36 @@ const loginRouterFn = (io) => {
         return await res.redirect("/login")
     })
 
-    loginRouter.get("/loginMiddleware", async (req, res) => {
+
+    ///--- admin panel render ---///
+    loginRouter.get("/adminPanel", async (req, res) => {
         const user = await userModel.findOne({ _id: req.session.sessionId })
+        const params = {isAdmin:false}
+        console.log(params)
 
-        if (!user) {
-            return res.redirect("/login")
+        if (!user.isAdmin) {
+            return res.render("adminPanel",params)
         }
-        else if (user.logged) {
-            return res.redirect("/products")
+        else{
+            params.isAdmin = true
+            return res.render("adminPanel",params)
         }
+        
+
     })
 
-    //admin panel render
-    loginRouter.get("/adminPanel", (req, res) => {
-        return res.render("adminPanel")
-    })
-
-    //change password render
+    ///--- change password render ---///
     loginRouter.get("/changePassword", async (req, res) => {
         return res.render("changepassword")
     })
 
-    //change password 
+
+
+    ///--- Change password endpoint ---///
     loginRouter.post("/changePassword", async (req, res) => {
         const email = req.body.email
         const actualPassword = req.body.actualPassword
-        var newPassword = req.body.newPassword
+        let newPassword = req.body.newPassword
         const newPasswordRepeat = req.body.newPasswordRepeat
 
         const user = await userModel.findOne({ email: email })
@@ -182,8 +205,6 @@ const loginRouterFn = (io) => {
     return loginRouter
 
 }
-
-
 
 
 

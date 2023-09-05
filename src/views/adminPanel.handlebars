@@ -1,12 +1,12 @@
 <div class="admin-dashboard">
-
+    {{#if isAdmin}}
     {{!-- Form to delete product --}}
-        <form class="delete-prod" id="delete-form">
-            <p>Delete product</p>
-            <input type="number" placeholder="Product ID" id="prod-id">
-            <button type="button" class="delete-button" id="delete-prod-button">Borrar</button>
-        </form>
-    
+    <form class="delete-prod" id="delete-form">
+        <p>Delete product</p>
+        <input type="number" placeholder="Product ID" id="prod-id">
+        <button type="button" class="delete-button" id="delete-prod-button">Borrar</button>
+    </form>
+
     {{!-- Form to add product --}}
     <form class="addprod-form" id="addprod-form">
         <p class="addprod-text">Add product</p>
@@ -40,6 +40,13 @@
         <input placeholder="thumbnails" id="prod-thumbnails" required name="thumbnails">
         <button type="button" id="add-prod-button">Agregar producto</button>
     </form>
+
+    {{else}}
+    <div class="notAdmin-div">
+        <h2 class="notAdmin-text">Debes ser administrador para ver esta pagina</h2>
+        <a href="/"> <button class="register-button">Ir al inicio</button></a>
+    </div>
+    {{/if}}
 </div>
 
 <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>

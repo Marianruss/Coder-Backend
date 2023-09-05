@@ -5,29 +5,30 @@
         <div class="login-button-div">
             <button type="submit" value="Enviar" class="prod-button login-button">Login</button>
         </div>
-        {{#if loginFailed}}
-        <p class="login-failed">Usuario o mail invalidos. Por favor reintentá</p>
+        {{#if incorrectPassword}}
+        <p class="login-failed">Contraseña incorrecta. Por favor reintentá</p>
         {{/if}}
         {{#if noEmail}}
-        <p class="login-failed">Debes registrarte para ingresar</p>
+        <p class="login-failed">No existe un usuario con ese email</p>
         {{/if}}
         {{#if alreadyLogged}}
         <p class="login-failed">El usuario ya está logeado</p>
         {{/if}}
     </form>
 
-    <div  class="login-github">
+    <div class="login-github">
         <i class="fa fa-github fa-2x" style="color: #ffffff;"></i>
         <a href="/login/githubcallback" class="github-link">Login with Github</a>
     </div>
 
     <p class="register-text">¿No sos usuario? Registrate</p>
-    <button type="button" class="prod-button login-button" id="register-button">Registrate</button>
+    <a href="/login/register"><button type="button" class="prod-button login-button" id="register-button">Registrate</button></a>
 
     <a href="http://localhost:8080/login/changePassword">Olvidé mi contraseña</a>
 
 </div>
 
 <script src="/js/scripts/registerScript.js"></script>
-{{!-- <script src="/socket.io/socket.io.js"></script>
+{{!--
+<script src="/socket.io/socket.io.js"></script>
 <script src="/js/chatSocket.js"></script> --}}

@@ -12,51 +12,49 @@ const initializePassport = () => {
         clientID: "Iv1.252c59937eaff6ae",
         clientSecret: "e4c969df7828cd0cc5ff6b8c8a98866c90264e28",
         callbackURL: "http://localhost:8080/login/githubcallback"
-    }, async (accessToken, refreshToken, profile, done) => {
-        try {
-            // console.log(profile._json.login)
-            let user = await userModel.findOne({ name: profile._json.login })
-            console.log(profile._json)
-            console.log("Se mostró usuario")
+    },
+        async (accessToken, refreshToken, profile, done) => {
+            try {
 
-            if (!user) {
-                console.log("no existe el usuario de git")
-                const newUser = await userModel.create({
-                    name: profile._json.login,
-                    lastname: "",
-                    email: profile._json.email,
-                    gender: "M",
-                    password: "",
-                    isAdmin: true,
-                    logged: false
-                })
+                let user = await userModel.findOne({ name: profile._json.login })
 
 
-                return done(null, newUser)
+                if (!user) {
+                    console.log("no existe el usuario de git")
+                    const newUser = await userModel.create({
+                        name: profile._json.login,
+                        lastname: "",
+                        email: profile._json.email,
+                        gender: "M",
+                        password: "",
+                        isAdmin: true,
+                        logged: false
+                    })
+
+
+                    return done(null, newUser)
+                }
+
+
+                // req.session.sessionId = user._id
+                // console.log(session)
+                // user = user.toObject()
+                // console.log(passport.session)
+                user.logged = true
+                await user.save()
+                return done(null, user)
+
             }
-
-
-            // req.session.sessionId = user._id
-            console.log("Ya existe el usuario de git")
-            // user = user.toObject()
-            user.logged = true
-            await user.save()
-            return done(null, user)
-
-
-
-
-        }
-        catch (error) {
-            return done(error)
-        }
-    }))
+            catch (error) {
+                return done(error)
+            }
+        }))
 
     passport.use("register", new localStrategy(
         { passReqToCallback: true, usernameField: "email" },
         async (req, username, password, done) => {
             try {
-                var user = await userModel.findOne({ email: username })
+                let user = await userModel.findOne({ email: username })
 
                 // console.log({ username })
 
@@ -66,17 +64,19 @@ const initializePassport = () => {
                 }
 
 
-                var body = req.body
+                let body = req.body
                 body.password = createHash(body.password)
-                const isAdmin = ((newUser.email === "adminCoder@coder.com" && newUser.password === "adminCod3r123") || (newUser.email === "marianruss12@gmail.com")) ? true : false
+
 
 
 
                 const newUser = {
                     ...body,
-                    isAdmin,
+                    isAdmin: false,
                     logged: false
                 }
+
+                newUser.isAdmin = ((newUser.email === "adminCoder@coder.com" && newUser.password === "adminCod3r123") || (newUser.email === "marianruss12@gmail.com")) ? true : false
 
 
                 const create = await userModel.create(newUser)
@@ -107,30 +107,30 @@ const initializePassport = () => {
         try {
 
             const user = await userModel.findOne({ email: username })
-            console.log(user)
-            console.log(password)
+            // console.log(user)
+            // console.log(password)
 
-            console.log("pasó encontrar user")
+            // console.log("pasó encontrar user")
             if (!user) {
-                console.log("No user")
+                // console.log("No user")
                 return done(null, false)
             }
-            console.log("pasó primer if")
+            // console.log("pasó primer if")
 
             //if name is incorrect recalls login with loginFailed true
-            console.log("asdasd")
+            // console.log("asdasd")
             if (username != user.email || !isValidPassword(password, user.password)) {
-                console.log("entró 2do if")
-                console.log("credenciales invalidas")
+                // console.log("entró 2do if")
+                // console.log("credenciales invalidas")
                 return done(null, false)
 
             }
 
-            console.log("pasó 2do if")
+            // console.log("pasó 2do if")
 
             user.logged = true
             await user.save()
-            console.log("llegó al final")
+            // console.log("llegó al final")
             // console.log(req.user)
             return done(null, user)
 

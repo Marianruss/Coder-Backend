@@ -13,10 +13,16 @@ const userModel = require("../dao/models/user.model")
 
 //traer todos los products, se puede poner un limit
 const prodRouterFn = (io) => {
+    
 
     prodRouter.get("/", async (req, res) => {
+
+        if (req.session.passport){
+            req.session.sessionId = req.session.passport.user
+        }
+        
         console.log(req.session)
-        const user = await userModel.findOne({_id : req.session.passport.user})
+        const user = await userModel.findOne({_id : req.session.sessionId})
         console.log(user)
 
 
@@ -25,18 +31,18 @@ const prodRouterFn = (io) => {
             return res.redirect("/login")
         }
         try {
-            var limit = parseInt(req.query.limit)
+            let limit = parseInt(req.query.limit)
             const sort = req.query.sort
             const pages = []
-            var query
-            var page = req.query.page
+            let query
+            let page = req.query.page
             const category = req.query.category === "juegos" ? "juegos" : req.query.category === "coleccionables" ? "coleccionables" : null
-            var finalProds = []
+            let finalProds = []
 
-            const user = await userModel.findOne({_id:req.session.passport.user})
-            console.log(req.session.passport.user)
-            console.log(user)
-            console.log("muestro session")
+            const user = await userModel.findOne({_id:req.session.sessionId})
+            // console.log(req.session.passport.user)
+            // console.log(user)
+            // console.log("muestro session")
             
             
 
@@ -47,7 +53,7 @@ const prodRouterFn = (io) => {
 
             const order = sort === "asc" ? { price: 1 } : sort === "desc" ? { price: -1 } : {}
 
-            var pageOptions = {
+            let pageOptions = {
                 page,
                 limit,
                 sort: order

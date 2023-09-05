@@ -357,6 +357,7 @@ body {
 
 .register-button {
     width: 200px;
+    color:white;
     border-radius: 6px;
     background-color: #fcc243;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
@@ -436,4 +437,18 @@ body {
     text-decoration: none;
     margin-left: 5px;
     color:white
+}
+
+.github-link:hover{
+    color:white
+}
+
+.notAdmin-text{
+    color: white;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.notAdmin-div{
+    display: flex;
+    flex-direction: column;
 }

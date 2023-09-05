@@ -66,7 +66,7 @@ const userRouter = require("./routers/userRouter")
 //Handlebars Views
 app.engine('handlebars', handlebars.engine())
 app.set('view engine', 'handlebars')
-app.set('views', './views')
+app.set('views', __dirname + '/views')
 
 //cookies
 
