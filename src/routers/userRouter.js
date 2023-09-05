@@ -14,6 +14,18 @@ const userRouterFn = ()=>{
         // userModel.insertOne()
     })
 
+    userRouter.get("/profile", async (req,res) =>{
+        const user = await userModel.findOne({_id:req.session.sessionId})
+        const params = {
+            name:user.name,
+            lastName:user.lastname,
+            genre: user.gender,
+            email: user.email,
+            age:user.age
+        }
+        return res.render("profile",params)
+    })  
+
 
     return userRouter
 }

@@ -81,7 +81,7 @@ app.use("/products", prodRouter)
 app.use("/carts", cartRouter)
 app.use("/chat", chatRouter)
 app.use("/login", loginRouter)
-app.use("/users", userRouter)
+app.use("/user", userRouter)
 
 
 app.get("/",(req,res) =>{
