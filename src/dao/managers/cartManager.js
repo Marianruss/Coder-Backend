@@ -30,15 +30,17 @@ class cartManager {
         const newCart = {
             code: totalCarts + 1,
             clientName: cart.clientName,
-            products: cart.products
+            products: cart.products,
+            total: 0
         }
 
         if (newCart.clientName.length === 0) {
             return ("empty")
         }
 
-        cartModel.create(newCart)
-        return ("success")
+        const createCart = await cartModel.create(newCart)
+        console.log(createCart._id)
+        return (createCart._id)
     }
 
     //------------------------------//
@@ -47,8 +49,8 @@ class cartManager {
     //show cart by id
     async getCart(code) {
 
-        const cart = await cartModel.find({ code: code })
-        console.log(cart)
+        const cart = await cartModel.find({ code: code }).lean().populate({path:"products.product",select:"title category subcategory"})
+        
 
         if (cart.length === 0) {
             return "inexistent"
@@ -63,8 +65,9 @@ class cartManager {
     async addProdToCart(cid, pid, quant) {
         //find the cart 
         const cart = await cartModel.findOne({ code: cid })
-        const prod = await prodModel.find({ code: pid })
-        console.log(cart)
+        const prod = await prodModel.findOne({ code: pid })
+        // console.log(cart.products[4].product)
+
 
         if (prod.length === 0) {
             return "no product"
@@ -74,16 +77,22 @@ class cartManager {
             return "no cart"
         }
 
-        const existingProduct = cart.products.findIndex(p => p.prodId === pid);
+        // console.log(cart)
+        // console.log(cart.total)
+        const existingProduct = cart.products.findIndex(item => item.product._id.toString() === prod._id.toString());
+        console.log(existingProduct,prod._id)
+        // console.log(existingProduct,prod.code)
 
         //if the index of the prod already exists it's add the quantity 
         if (existingProduct != -1) {
             cart.products[existingProduct].quantity += quant;
+            cart.products[existingProduct].total += prod.price
 
         }
         //else it pushes the product to products
         else {
-            cart.products.push({ prodId: pid, quantity: quant });
+            cart.products.push({ product: prod._id, quantity: quant });
+            cart.total += prod.price
         }
 
         //Mark products as modified
@@ -91,13 +100,7 @@ class cartManager {
 
         //Save changes
         await cart.save()
-        // const log = `Se agregó al carrito el product con id ${pid}`
 
-        // // this.fs.appendFile(this.logs, log, "utf-8", (err) => {
-        // //     if (err) {
-        // //         console.log(err)
-        // //     }
-        // // })
 
         return "added"
 
@@ -111,11 +114,11 @@ class cartManager {
     async deleteCart(cartId) {
         const cart = await cartModel.findOne({ code: cartId })
 
-        if (cart === null){
+        if (cart === null) {
             return "no cart"
         }
         try {
-            await cartModel.deleteOne({code:cartId})
+            await cartModel.deleteOne({ code: cartId })
             return "deleted"
 
         } catch (err) {

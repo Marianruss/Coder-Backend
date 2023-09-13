@@ -4,14 +4,16 @@ const userSchema = mongoose.Schema({
     name: String,
     lastname: String,
     email: String,
-    age:Number,
+    age: Number,
     gender: String,
     password: String,
     isAdmin: Boolean,
-    logged: Boolean
+    logged: Boolean,
+    cart: {type: mongoose.Schema.Types.ObjectId,
+        ref: "carts"}
 })
 
-const userModel = mongoose.model('users',userSchema)
+const userModel = mongoose.model('users', userSchema)
 
 
 module.exports = userModel

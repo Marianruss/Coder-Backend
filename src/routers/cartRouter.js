@@ -3,6 +3,7 @@ const admin = new cartManager
 const axios = require("axios")
 const { Router } = require("express")
 const { prodRouter } = require("./prodRouter")
+const prodModel = require("../dao/models/product.model")
 
 const cartRouter = Router()
 
@@ -14,13 +15,14 @@ cartRouter.post("/add", async (req, res) => {
     const created = await admin.addCart(cart)
 
     switch (created) {
-        case "success":
-            return res.status(200).json({
-                msg: "product created"
-            })
+
         case "empty":
             return res.status(400).json({
                 msg: "empty keys"
+            })
+        default:
+            return res.status(200).json({
+                msg: "cart created"
             })
     }
 

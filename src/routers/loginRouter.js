@@ -34,11 +34,12 @@ const loginRouterFn = (io) => {
 
     const loginMiddleware = async (req, res) => {
 
-        const user = await userModel.findOne({ email: req.body.email })
+        const user = await userModel.findOne({ email: req.body.email }).populate("cart")
         const password = req.body.password
         const sessionId = req.session.sessionId
+        const cartId = user.cart.code
 
-        // console.log(req.body.password)
+        console.log(cartId)
 
         //No existe usuario
         if (!user) {
@@ -86,6 +87,14 @@ const loginRouterFn = (io) => {
     }))
 
 
+    loginRouter.get("/getUser", async (req,res) =>{
+        const email = req.body.email
+        const user = await userModel.findOne({email:email}).populate("cart")
+
+        console.log(user.cart)
+
+        return res.send(user)
+    })
 
 
     ///--- Github login passport strat ---///
@@ -134,6 +143,7 @@ const loginRouterFn = (io) => {
     ///--- on logout button click we set logged to false so the session can relogin ---///
     loginRouter.post("/logout", async (req, res) => {
         const user = await userModel.findOne({ _id: req.session.sessionId })
+        console.log(user)
         console.log(req.session)
 
         user.logged = false
@@ -150,7 +160,7 @@ const loginRouterFn = (io) => {
         console.log(params)
 
         if (!user.isAdmin) {
-            return res.render("adminPanel",params)
+            return res.redirect("/products")
         }
         else{
             params.isAdmin = true

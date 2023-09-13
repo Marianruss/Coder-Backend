@@ -1,3 +1,4 @@
+require('dotenv').config()
 const handlebars = require("express-handlebars")
 const express = require("express")
 const app = express()
@@ -14,14 +15,13 @@ const initializePassport = require("./config/passport.config")
 const passport = require("passport")
 
 
-
 //Run app
 const PORT = 8080
 const httpServer = app.listen(PORT, () => {
     console.log(`Server running in port ${PORT}...`)
 })
 
-const mongoConnect = "mongodb+srv://marianruss:Darksouls3@cluster0.n9qkduy.mongodb.net/geekers-store?retryWrites=true&w=majority"
+const mongoConnect = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}`
 
 mongoose.connect(mongoConnect)
     .catch(err => {

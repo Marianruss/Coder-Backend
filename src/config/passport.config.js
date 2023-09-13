@@ -3,6 +3,9 @@ const passportLocal = require("passport-local")
 const githubStrategy = require("passport-github2")
 const userModel = require("../dao/models/user.model")
 const { createHash, isValidPassword } = require("../utils/passwordHash")
+const cartManager = require("../dao/managers/cartManager")
+const cartRouter = require("../routers/cartRouter")
+const admin = new cartManager
 
 const localStrategy = passportLocal.Strategy
 
@@ -35,11 +38,6 @@ const initializePassport = () => {
                     return done(null, newUser)
                 }
 
-
-                // req.session.sessionId = user._id
-                // console.log(session)
-                // user = user.toObject()
-                // console.log(passport.session)
                 user.logged = true
                 await user.save()
                 return done(null, user)
@@ -50,11 +48,13 @@ const initializePassport = () => {
             }
         }))
 
+        ///--- Register strat ---///
     passport.use("register", new localStrategy(
         { passReqToCallback: true, usernameField: "email" },
         async (req, username, password, done) => {
             try {
                 let user = await userModel.findOne({ email: username })
+                const cartId = await admin.addCart({clientName: username,products:[]})
 
                 // console.log({ username })
 
@@ -67,13 +67,15 @@ const initializePassport = () => {
                 let body = req.body
                 body.password = createHash(body.password)
 
+                console.log(cartId)
 
 
 
                 const newUser = {
                     ...body,
                     isAdmin: false,
-                    logged: false
+                    logged: false,
+                    cart: cartId
                 }
 
                 newUser.isAdmin = ((newUser.email === "adminCoder@coder.com" && newUser.password === "adminCod3r123") || (newUser.email === "marianruss12@gmail.com")) ? true : false
@@ -106,32 +108,24 @@ const initializePassport = () => {
     passport.use("login", new localStrategy({ usernameField: "email" }, async (username, password, done) => {
         try {
 
-            const user = await userModel.findOne({ email: username })
-            // console.log(user)
-            // console.log(password)
+            const user = await userModel.findOne({ email: username }).populate("carts")
 
-            // console.log("pasó encontrar user")
             if (!user) {
-                // console.log("No user")
+
                 return done(null, false)
             }
-            // console.log("pasó primer if")
 
             //if name is incorrect recalls login with loginFailed true
-            // console.log("asdasd")
+
             if (username != user.email || !isValidPassword(password, user.password)) {
-                // console.log("entró 2do if")
-                // console.log("credenciales invalidas")
                 return done(null, false)
 
             }
 
-            // console.log("pasó 2do if")
+
 
             user.logged = true
             await user.save()
-            // console.log("llegó al final")
-            // console.log(req.user)
             return done(null, user)
 
         }

@@ -6,10 +6,10 @@
             <button type="submit" value="Enviar" class="prod-button login-button">Login</button>
         </div>
         {{#if incorrectPassword}}
-        <p class="login-failed">Contraseña incorrecta. Por favor reintentá</p>
+        <p class="login-failed">Usuario o contraseña incorrectos</p>
         {{/if}}
         {{#if noEmail}}
-        <p class="login-failed">No existe un usuario con ese email</p>
+        <p class="login-failed">Usuario o contraseña incorrectos</p>
         {{/if}}
         {{#if alreadyLogged}}
         <p class="login-failed">El usuario ya está logeado</p>
@@ -21,10 +21,10 @@
         <a href="/login/githubcallback" class="github-link">Login with Github</a>
     </div>
 
-    <p class="register-text">¿No sos usuario? Registrate</p>
+    <p class="register-text">¿No sos usuario?</p>
     <a href="/login/register"><button type="button" class="prod-button login-button" id="register-button">Registrate</button></a>
 
-    <a href="http://localhost:8080/login/changePassword">Olvidé mi contraseña</a>
+    <a href="http://localhost:8080/login/changePassword" class="forgotpassword-link">Olvidé mi contraseña</a>
 
 </div>
 

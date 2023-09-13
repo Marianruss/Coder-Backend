@@ -39,7 +39,7 @@ changePasswordButton.addEventListener("click", async () => {
 
         switch (response.statusText) {
             case "No existe el usuario":
-                alertify.error("No existe el usuario ingresado")
+                alertify.error("Usuario o contraseña actual incorrectos")
                 break
 
             case "Las contraseñas no coinciden":
@@ -47,7 +47,7 @@ changePasswordButton.addEventListener("click", async () => {
                 break
 
             case "Contraseña actual incorrecta":
-                alertify.error("Contraseña actual incorrecta")
+                alertify.error("Usuario o contraseña actual incorrectos")
                 break
         }
 
