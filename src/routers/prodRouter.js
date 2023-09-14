@@ -13,40 +13,35 @@ const userModel = require("../dao/models/user.model")
 
 //traer todos los products, se puede poner un limit
 const prodRouterFn = (io) => {
-    
 
+
+    ///--- Main products render ---///
     prodRouter.get("/", async (req, res) => {
 
-        if (req.session.passport){
+        if (req.session.passport) {
             req.session.sessionId = req.session.passport.user
         }
-        
-        console.log(req.session)
-        const user = await userModel.findOne({_id : req.session.sessionId})
-        console.log(user)
 
 
-        
-        if (!user || user.logged === false){
-            return res.redirect("/login")
-        }
+        const user = await userModel.findOne({ _id: req.session.sessionId })
+
         try {
             let limit = parseInt(req.query.limit)
             const sort = req.query.sort
             const pages = []
             let query
+            let prods
             let page = req.query.page
             const category = req.query.category === "juegos" ? "juegos" : req.query.category === "coleccionables" ? "coleccionables" : null
             let finalProds = []
 
-            const user = await userModel.findOne({_id:req.session.sessionId})
-            // console.log(req.session.passport.user)
-            // console.log(user)
-            // console.log("muestro session")
-            
-            
+            const user = await userModel.findOne({ _id: req.session.sessionId })
 
+            if (!user) {
+                throw new Error("There is no logged user, can't access products")
+            }
 
+            // Main query for filter products
             if (!page) page = 1
 
             if (!limit) limit = 10
@@ -65,22 +60,27 @@ const prodRouterFn = (io) => {
 
             if (!category) query = {}
 
+            //query to mongo db to get products
+            try {
+                prods = await admin.getProducts(query, pageOptions)
+                finalProds = prods.docs.map(item => item.toObject())
+                if (finalProds.lenght === 0) {
+                    throw new Error("Can't get any products from DB")
+                }
+            }
+            catch (err) {
+                console.log(`No se pudieron cargar los productos - ${err}`)
+            }
 
 
-            // console.log(query, pageOptions)
 
-
-            const prods = await admin.getProducts(query, pageOptions)
-            // console.log(prods)
-
-            finalProds = prods.docs.map(item => item.toObject())
-
-            // console.log(finalProds)
 
             for (let i = 1; i < prods.totalPages + 1; i++) {
                 pages.push(i)
             }
 
+
+            //params for render
             params = {
                 title: "Productos",
                 prods: finalProds,
@@ -90,74 +90,75 @@ const prodRouterFn = (io) => {
                 hasNextPage: prods.hasNextPage,
                 pagingCounter: prods.pagingCounter,
                 isAdmin: user.isAdmin,
-                username: user.name                
+                username: user.name
             }
 
-            
-
-
-
+            //render
             res.render('products', params)
 
         }
         catch (err) {
             console.log(err)
-            return res.status(500).json({
-                error: `Algo salió mal, ${err}`,
-            })
+            return res.status(404).redirect("/login")
         }
     })
 
 
-    //get prod by id
+    ///--- get prod by id ---///
 
     prodRouter.get("/:code", async (req, res) => {
+
         try {
             const code = parseInt(req.params.code)
             const prod = await admin.searchById(code)
             console.log(prod)
+
+            //if there is no product returns 404 
             if (typeof (prod) != "object") {
                 return res.status(404).json({
                     error: "No existe el producto"
                 })
-            } else {
+            }
+            //else returns the product
+            else {
                 return res.send(prod)
             }
         }
+
         catch (err) {
+            //in case of err returns 500
             console.log(err)
             return res.status(500).json({
-                error: "Internal server error"
+                error: err
             });
         }
     })
 
 
-    //add prod
+    ///--- add product ---///
     prodRouter.post("/add", async (req, res) => {
 
         try {
             const prod = req.body
             console.log(prod)
 
+            //calls addproduct from productManager
             const add = await admin.addProduct(prod, admin)
-            
+
+
+            //handles the different method returns
             switch (add) {
                 case "added":
-                    res.statusMessage = "Item agregado a la DB"     
+                    res.statusMessage = "Item agregado a la DB"
                     return res.status(200).json({
                         msg: "Item agregado a la DB"
-                    })       
+                    })
                 default:
                     res.statusMessage = "No se pudo agregar el producto"
                     return res.status(400).json({
                         msg: "No se pudo agregar el producto"
                     })
             }
-
-            res.status(200).json({
-                message: "product added sucessfully"
-            })
         }
 
         catch (err) {

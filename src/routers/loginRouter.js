@@ -14,18 +14,14 @@ const loginRouterFn = (io) => {
 
 
 
+
     loginRouter.get("/", async (req, res) => {
         const user = await userModel.findOne({ _id: req.session.sessionId })
-
-        // console.log(user)
-
+        
         if (!user) {
             return res.render("login")
         }
-
-        if (user.logged) {
-            return res.redirect("/products")
-        }
+        return res.redirect("/products")
 
     })
 
@@ -49,21 +45,6 @@ const loginRouterFn = (io) => {
             return res.render("login", params)
         }
 
-        //Usuario ya logeado desde otra session
-        else if (user.logged && user._id != req.session.sessionId) {
-
-            const params = {
-                alreadyLogged: true
-            }
-            console.log("session diferente y usuario logeado")
-            return res.render("login", params)
-        }
-
-        //Usuario ya logeado en la misma session
-        else if (user.logged === true) {
-            console.log("aca debería ir a products")
-            return res.redirect("products")
-        }
 
         //Contraseña incorrecta
         else if (!isValidPassword(req.body.password, user.password)) {
@@ -75,8 +56,6 @@ const loginRouterFn = (io) => {
 
         //Guardamos los datos del usuario.
         req.session.sessionId = user._id
-        user.logged = true
-        user.save()
         return res.redirect("/products")
     }
 
@@ -85,17 +64,6 @@ const loginRouterFn = (io) => {
 
     loginRouter.post("/", loginMiddleware, passport.authenticate("login", { failureRedirect: "/login" }, async (req, res) => {
     }))
-
-
-    loginRouter.get("/getUser", async (req,res) =>{
-        const email = req.body.email
-        const user = await userModel.findOne({email:email}).populate("cart")
-
-        console.log(user.cart)
-
-        return res.send(user)
-    })
-
 
     ///--- Github login passport strat ---///
     loginRouter.get("/github", passport.authenticate("github", { scope: ["user:email"] }), async (req, res) => { console.log("sad") })
@@ -123,10 +91,7 @@ const loginRouterFn = (io) => {
     //register logic
     loginRouter.post("/register", passport.authenticate("register", { failureRedirect: "/login/failureRegister" }),
         async (req, res) => {
-
             return res.status(201).redirect(`/login`)
-
-
         })
 
     loginRouter.get("/failureRegister", (req, res) => {
@@ -142,12 +107,6 @@ const loginRouterFn = (io) => {
 
     ///--- on logout button click we set logged to false so the session can relogin ---///
     loginRouter.post("/logout", async (req, res) => {
-        const user = await userModel.findOne({ _id: req.session.sessionId })
-        console.log(user)
-        console.log(req.session)
-
-        user.logged = false
-        user.save()
         req.session.destroy()
         return await res.redirect("/login")
     })
@@ -156,17 +115,17 @@ const loginRouterFn = (io) => {
     ///--- admin panel render ---///
     loginRouter.get("/adminPanel", async (req, res) => {
         const user = await userModel.findOne({ _id: req.session.sessionId })
-        const params = {isAdmin:false}
+        const params = { isAdmin: false }
         console.log(params)
 
         if (!user.isAdmin) {
             return res.redirect("/products")
         }
-        else{
+        else {
             params.isAdmin = true
-            return res.render("adminPanel",params)
+            return res.render("adminPanel", params)
         }
-        
+
 
     })
 
@@ -185,7 +144,7 @@ const loginRouterFn = (io) => {
         const newPasswordRepeat = req.body.newPasswordRepeat
 
         const user = await userModel.findOne({ email: email })
-
+        
         if (!user) {
             res.statusMessage = "No existe el usuario"
             return res.status(404).end()
@@ -201,7 +160,7 @@ const loginRouterFn = (io) => {
             return res.status(401).end()
         }
 
-
+        //hash the password and save it in user in DB
         newPassword = createHash(newPassword)
         user.password = newPassword
         await user.save()

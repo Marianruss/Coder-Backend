@@ -74,7 +74,7 @@ app.set('views', __dirname + '/views')
 //Express encode and public
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-app.use(static('public/'))
+app.use(static('public'. __dirname + "public"))
 
 //Use routers
 app.use("/products", prodRouter)

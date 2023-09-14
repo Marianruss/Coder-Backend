@@ -6,25 +6,42 @@ const userRouter = Router()
 const userModel = require("../dao/models/user.model")
 
 
-const userRouterFn = ()=>{
+const userRouterFn = () => {
 
-    userRouter.post("/create",(req,res) =>{
-        const user = req.body
-        return res.send(user)
-        // userModel.insertOne()
+
+
+    ///--- Profile render ---///
+    userRouter.get("/profile", async (req, res) => {
+        try {
+            const user = await userModel.findOne({ _id: req.session.sessionId })
+
+            if (!user) {
+                throw new Error("No hay usuario logeado")
+            }
+            const params = {
+                name: user.name,
+                lastName: user.lastname,
+                genre: user.gender,
+                email: user.email,
+                age: user.age
+            }
+            return res.render("profile", params)
+        } catch (err) {
+            console.log(err)
+            return res.status(404).redirect("/")
+        }
+
     })
 
-    userRouter.get("/profile", async (req,res) =>{
-        const user = await userModel.findOne({_id:req.session.sessionId})
-        const params = {
-            name:user.name,
-            lastName:user.lastname,
-            genre: user.gender,
-            email: user.email,
-            age:user.age
-        }
-        return res.render("profile",params)
-    })  
+    ///--- Get user by email ---///
+    userRouter.get("/getUser", async (req, res) => {
+        const email = req.query.email
+        const user = await userModel.findOne({ email: email }).populate("cart")
+
+        console.log(user.cart)
+
+        return res.send(user)
+    })
 
 
     return userRouter
