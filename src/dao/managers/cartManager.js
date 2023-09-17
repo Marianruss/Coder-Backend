@@ -23,7 +23,7 @@ class cartManager {
     //------------------------------//
     //------------------------------//
 
-    //add new cart
+    ///--- add new cart  ---///
     async addCart(cart) {
         const totalCarts = await cartModel.countDocuments().exec()
 
@@ -46,11 +46,11 @@ class cartManager {
     //------------------------------//
     //------------------------------//
 
-    //show cart by id
+    ///---  show cart by id  ---///
     async getCart(code) {
 
-        const cart = await cartModel.find({ code: code }).lean().populate({path:"products.product",select:"title category subcategory"})
-        
+        const cart = await cartModel.find({ code: code }).lean().populate({ path: "products.product", select: "title category subcategory code" })
+
 
         if (cart.length === 0) {
             return "inexistent"
@@ -58,10 +58,104 @@ class cartManager {
         return cart
     }
 
+
+    //------------------------------//
+    //------------------------------//
+
+    ///---  delete all items from cart  ---///
+
+    async deleteItemsFromCart(cid) {
+        const cart = await cartModel.findOne({ code: cid })
+        if (!cart) {
+            return "no cart"
+        }
+
+        try {
+            await cartModel.updateOne({ code: cid }, { products: [] })
+            return "deleted"
+        }
+        catch (err) {
+            console.log(err)
+            return err
+        }
+    }
+
+
     //------------------------------//
     //------------------------------//
 
 
+    ///---  modify quantity of product in cart by id of cart and product  ---///
+    async modifyQuantityOfProduct(cid, pid,quantity) {
+        const cart = await cartModel.findOne({ code: cid })
+        const prod = await prodModel.findOne({ code: pid })
+
+        if(!cart){
+            return "no cart"
+        }
+
+        try {
+            const index = cart.products.findIndex(item => item.product._id.toString() === prod._id.toString())
+            if (index === -1){
+                return "no prod"
+            }
+            try {
+                cart.products[index].quantity = quantity
+                cart.save()
+                return "modified"
+            } 
+            catch (err) {
+                console.log(err)
+                return err
+            }
+        } 
+        catch (err) {
+
+        }
+
+    }
+
+
+    //------------------------------//
+    //------------------------------//
+
+    ///---  delete all items from cart  ---///
+    async deleteProductFromCart(cid, pid) {
+        const cart = await cartModel.findOne({ code: cid })
+        const prod = await prodModel.findOne({ code: pid })
+
+        try {
+            const index = cart.products.findIndex(item => item.product._id.toString() === prod._id.toString())
+
+            if (index === -1) {
+                return "no prod"
+            }
+            try {
+                cart.products.splice(index, 1)
+                cart.save()
+                return "deleted"
+            }
+            catch (err) {
+                console.log(err)
+                return err
+            }
+        }
+        catch (err) {
+            console.log(err)
+            return "no prod"
+        }
+
+
+
+
+
+    }
+
+    //------------------------------//
+    //------------------------------//
+
+
+    ///---  add product to cart  ---///
     async addProdToCart(cid, pid, quant) {
         //find the cart 
         const cart = await cartModel.findOne({ code: cid })
@@ -77,10 +171,8 @@ class cartManager {
             return "no cart"
         }
 
-        // console.log(cart)
-        // console.log(cart.total)
         const existingProduct = cart.products.findIndex(item => item.product._id.toString() === prod._id.toString());
-        console.log(existingProduct,prod._id)
+        console.log(existingProduct, prod._id)
         // console.log(existingProduct,prod.code)
 
         //if the index of the prod already exists it's add the quantity 
@@ -111,6 +203,7 @@ class cartManager {
     //------------------------------//
 
 
+    ///--- delete cart ---///
     async deleteCart(cartId) {
         const cart = await cartModel.findOne({ code: cartId })
 
