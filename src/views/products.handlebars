@@ -47,9 +47,7 @@
 
 
                 <form class="cart-form" id="cart-form" data-id={{this.code}}>
-                    <p>cart ID</p>
-                    <input type="text" name="cart" id="cart-id" class="cart-id" placeholder="ID">
-                    <button id="add-cart" class="prod-button" type="submit">Add to cart</button>
+                    <button id="add-cart" class="prod-button" type="submit" value={{../cartCode}}>Add to cart</button>
                 </form>
             </div>
             {{/each}}

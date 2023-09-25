@@ -11,7 +11,7 @@ const { collectibles } = require("../utils/agregates/agregates")
 const userModel = require("../dao/models/user.model")
 
 
-//traer todos los products, se puede poner un limit
+
 const prodRouterFn = (io) => {
 
 
@@ -23,7 +23,8 @@ const prodRouterFn = (io) => {
         }
 
 
-        const user = await userModel.findOne({ _id: req.session.sessionId })
+        const user = await userModel.findOne({ _id: req.session.sessionId }).populate("cart")
+        // console.log(user.cart.code)
 
         try {
             let limit = parseInt(req.query.limit)
@@ -31,11 +32,14 @@ const prodRouterFn = (io) => {
             const pages = []
             let query
             let prods
+            let cartCode = parseInt(user.cart.code)
             let page = req.query.page
             const category = req.query.category === "juegos" ? "juegos" : req.query.category === "coleccionables" ? "coleccionables" : null
             let finalProds = []
 
-            const user = await userModel.findOne({ _id: req.session.sessionId })
+            // const user = await userModel.findOne({ _id: req.session.sessionId })
+
+            console.log(cartCode)
 
             if (!user) {
                 throw new Error("There is no logged user, can't access products")
@@ -90,9 +94,11 @@ const prodRouterFn = (io) => {
                 hasNextPage: prods.hasNextPage,
                 pagingCounter: prods.pagingCounter,
                 isAdmin: user.isAdmin,
-                username: user.name
+                username: user.name,
+                cartCode
             }
 
+            console.log(params)
             //render
             res.render('products', params)
 

@@ -86,9 +86,9 @@ forms.forEach(form => {
         const id = form.getAttribute("data-id")
         e.preventDefault()
 
-        const cartIdInput = form.querySelector("#cart-id");
+        const cartIdInput = form.querySelector("#add-cart");
         const cartId = cartIdInput.value; // Retrieve user input directly
-        console.log(cartId, id)
+        console.log(document.getElementById("add-cart"))
 
         alertify.confirm('Confirm Message', async function (e) {
             if (e) {

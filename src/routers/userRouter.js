@@ -37,9 +37,7 @@ const userRouterFn = () => {
     userRouter.get("/getUser", async (req, res) => {
         const email = req.query.email
         const user = await userModel.findOne({ email: email }).populate("cart")
-
-        console.log(user.cart)
-
+        
         return res.send(user)
     })
 
